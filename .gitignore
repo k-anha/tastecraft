@@ -1,0 +1,57 @@
+# ================================================================
+# Secrets & Environment Files (CRITICAL: Never commit to GitHub)
+# ================================================================
+.env
+.env.*
+*.env
+**/.env
+**/.env.*
+!.env.example
+!**/.env.example
+
+# ================================================================
+# Python & Virtual Environments
+# ================================================================
+venv/
+.venv/
+env/
+ENV/
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.pytest_cache/
+.coverage
+htmlcov/
+
+# ================================================================
+# Node & Frontend Build Artifacts
+# ================================================================
+node_modules/
+**/node_modules/
+dist/
+**/dist/
+.vite/
+**/.vite/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# ================================================================
+# Database & Local Storage Files
+# ================================================================
+*.db
+*.sqlite
+*.sqlite3
+tastecraft.db
+
+# ================================================================
+# Operating System & IDE Files
+# ================================================================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo
