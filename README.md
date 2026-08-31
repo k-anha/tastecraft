@@ -67,14 +67,18 @@ uvicorn backend.app.main:app --reload --port 8000
 
 > **API Documentation (Swagger UI)** will be live at [http://127.0.0.1:8000/docs](http://127.0.0.1:8000/docs).
 
-#### Configuring PostgreSQL:
-By default, TasteCraft starts instantly using `sqlite:///./tastecraft.db`. To connect to a PostgreSQL instance:
-1. Create a database (e.g., `tastecraft_db`).
-2. Set the `DATABASE_URL` in `backend/.env`:
-   ```env
-   DATABASE_URL="postgresql://postgres:yourpassword@localhost:5432/tastecraft_db"
+#### Configuring Environment Variables (`.env`):
+1. Copy `.env.example` to `.env`:
+   ```bash
+   cp .env.example .env
    ```
-3. Run `python backend/app/seed.py` to seed tables and sample data.
+2. Configure your local database and secrets in `.env`:
+   ```env
+   DATABASE_URL=postgresql://postgres:YOUR_PASSWORD@localhost:5432/tastecraft_db
+   SECRET_KEY=your-secure-jwt-key
+   ```
+   > ⚠️ **Security Notice**: `.env` is listed in `.gitignore` and must **never** be committed to GitHub.
+3. Run `python init_db.py` to initialize PostgreSQL tables and seed realistic sample data.
 
 ---
 
@@ -83,9 +87,24 @@ By default, TasteCraft starts instantly using `sqlite:///./tastecraft.db`. To co
 ```bash
 cd frontend
 
+# Install dependencies if not already done
+npm install
+
 # Start the Vite development server
 npm run dev
 ```
+
+---
+
+### 4. 🌐 Hosting & Deployment Guide
+
+When deploying to production platforms (such as **Render**, **Railway**, **Fly.io**, **Vercel**, **Supabase**, or **AWS**):
+1. **Never upload `.env` to GitHub** (it is protected by `.gitignore`).
+2. Add your environment variables directly in the hosting provider's dashboard / settings:
+   - `DATABASE_URL`: Your hosted PostgreSQL connection string (from Supabase, Neon, Railway, or AWS RDS).
+   - `SECRET_KEY`: A randomly generated 64-char string for JWT security (`python -c "import secrets; print(secrets.token_hex(32))"`).
+   - `BACKEND_CORS_ORIGINS`: Your production frontend URL (e.g. `https://tastecraft.vercel.app`).
+3. For Frontend on Vercel / Netlify: Set `VITE_API_URL` to your live backend domain (e.g. `https://tastecraft-api.onrender.com/api/v1`).
 
 > **Frontend Web App** will be running at [http://localhost:5173](http://localhost:5173).
 
