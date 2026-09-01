@@ -2,14 +2,14 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { 
   Search, Bookmark, PlusCircle, User, LogOut, Menu, X, 
-  UtensilsCrossed, ChevronDown, Globe, Fingerprint, MapPin 
+  UtensilsCrossed, ChevronDown, Globe, MapPin 
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCountry } from '../context/CountryContext';
 
 export const Navbar = () => {
   const { user, isAuthenticated, logout } = useAuth();
-  const { country, countryCode, setCountry, countries, detectedLocation } = useCountry();
+  const { country, countryCode, setCountry, countries } = useCountry();
   const navigate = useNavigate();
   
   const [searchQuery, setSearchQuery] = useState('');
@@ -81,13 +81,13 @@ export const Navbar = () => {
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
-            {/* Country Selector (Auto IP-detected with quick switcher) */}
+            {/* Country Selector */}
             <div className="relative">
               <button
                 type="button"
                 onClick={() => setCountryDropdownOpen(!countryDropdownOpen)}
                 className="flex items-center gap-1.5 px-3 py-1.5 rounded-full border border-slate-200 hover:border-slate-300 bg-slate-50/80 hover:bg-white text-xs font-bold text-slate-700 transition-all shadow-sm"
-                title={`Country: ${country.name} (Detected via IP)`}
+                title={`Country: ${country.name}`}
               >
                 <span>{country.flag}</span>
                 <span className="hidden sm:inline font-semibold text-slate-800">{country.name}</span>
@@ -102,11 +102,8 @@ export const Navbar = () => {
                     onClick={() => setCountryDropdownOpen(false)}
                   />
                   <div className="absolute right-0 mt-2 w-60 bg-white rounded-2xl shadow-xl border border-slate-100 py-2 z-30 max-h-80 overflow-y-auto">
-                    <div className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 flex items-center justify-between">
+                    <div className="px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100">
                       <span>Country & Region</span>
-                      {detectedLocation?.countryName && (
-                        <span className="text-[9px] text-emerald-600 font-normal">IP: {detectedLocation.city || detectedLocation.countryName}</span>
-                      )}
                     </div>
                     {countries.map((c) => (
                       <button
@@ -171,12 +168,8 @@ export const Navbar = () => {
                         </p>
                         <p className="text-[11px] text-slate-500 truncate">{user?.email}</p>
                         {user?.phone_number && (
-                          <p className="text-[11px] text-slate-500 truncate mt-0.5">{user?.phone_number}</p>
+                          <p className="text-[11px] text-slate-500 truncate mt-0.5">{user?.country_code || ''} {user?.phone_number}</p>
                         )}
-                        <div className="mt-1.5 inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-slate-100 text-[10px] font-mono text-slate-700 font-bold">
-                          <Fingerprint className="w-3 h-3 text-brand-500" />
-                          ID: {user?.id}
-                        </div>
                       </div>
 
                       <div className="py-1">

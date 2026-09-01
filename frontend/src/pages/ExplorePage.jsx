@@ -2,6 +2,7 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { Search, SlidersHorizontal, ArrowUpDown, X, UtensilsCrossed } from 'lucide-react';
 import api from '../services/api';
+import { DatabaseLoader } from '../components/DatabaseLoader';
 
 const RestaurantCard = lazy(() =>
   import('../components/RestaurantCard').then((m) => ({ default: m.RestaurantCard }))
@@ -243,10 +244,8 @@ export const ExplorePage = () => {
           </div>
 
           {loading ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {[1, 2, 3, 4, 5, 6].map((n) => (
-                <div key={n} className="h-80 rounded-2xl bg-slate-200 animate-pulse" />
-              ))}
+            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+              <DatabaseLoader message="Searching restaurants in database..." subtitle="Filtering dining spots, ratings, and price tiers" />
             </div>
           ) : restaurants.length === 0 ? (
             <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-4">

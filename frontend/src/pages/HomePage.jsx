@@ -6,6 +6,7 @@ import {
 } from 'lucide-react';
 import api from '../services/api';
 import { RatingStars } from '../components/RatingStars';
+import { DatabaseLoader } from '../components/DatabaseLoader';
 
 const RestaurantCard = lazy(() =>
   import('../components/RestaurantCard').then((m) => ({ default: m.RestaurantCard }))
@@ -210,10 +211,8 @@ export const HomePage = () => {
         </div>
 
         {loading ? (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {[1, 2, 3, 4, 5, 6].map((n) => (
-              <div key={n} className="h-80 rounded-2xl bg-slate-200 animate-pulse" />
-            ))}
+          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <DatabaseLoader message="Fetching highest-rated dining spots..." subtitle="Querying verified foodie ratings and scores from database" />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

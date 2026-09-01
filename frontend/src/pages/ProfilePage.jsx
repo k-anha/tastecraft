@@ -7,6 +7,7 @@ import {
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { DatabaseLoader } from '../components/DatabaseLoader';
 
 const ReviewCard = lazy(() =>
   import('../components/ReviewCard').then((m) => ({ default: m.ReviewCard }))
@@ -127,9 +128,6 @@ export const ProfilePage = () => {
                     <ShieldCheck className="w-3.5 h-3.5" /> Restaurant Owner
                   </span>
                 )}
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-slate-100 font-mono text-[11px] font-bold text-slate-700">
-                  ID: {user.id}
-                </span>
               </div>
               <p className="text-xs text-slate-500 font-medium">
                 @{user.username} • {user.email} {user.phone_number && `• ${user.country_code || ''} ${user.phone_number}`}
@@ -299,10 +297,8 @@ export const ProfilePage = () => {
 
       {/* Tab Content */}
       {loading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {[1, 2].map((n) => (
-            <div key={n} className="h-60 rounded-2xl bg-slate-200 animate-pulse" />
-          ))}
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+          <DatabaseLoader message="Fetching your profile data..." subtitle="Loading your personalized reviews and bookmarks from database" />
         </div>
       ) : activeTab === 'reviews' ? (
         myReviews.length === 0 ? (

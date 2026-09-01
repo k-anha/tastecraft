@@ -8,6 +8,7 @@ import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { RatingStars } from '../components/RatingStars';
+import { DatabaseLoader } from '../components/DatabaseLoader';
 
 const DishTagInput = lazy(() =>
   import('../components/DishTagInput').then((m) => ({ default: m.DishTagInput }))
@@ -155,9 +156,10 @@ export const WriteReviewPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-3xl mx-auto px-4 py-12 space-y-6">
-        <div className="h-40 rounded-2xl bg-slate-200 animate-pulse" />
-        <div className="h-80 rounded-2xl bg-slate-200 animate-pulse" />
+      <div className="max-w-3xl mx-auto px-4 py-12">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+          <DatabaseLoader message="Fetching restaurant details from database..." subtitle="Loading dining spots and menus for review creation" />
+        </div>
       </div>
     );
   }

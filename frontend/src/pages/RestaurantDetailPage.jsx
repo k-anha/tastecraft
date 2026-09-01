@@ -10,6 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
 import { useCurrency } from '../context/CurrencyContext';
 import { RatingStars } from '../components/RatingStars';
+import { DatabaseLoader } from '../components/DatabaseLoader';
 
 const RatingBreakdown = lazy(() =>
   import('../components/RatingBreakdown').then((m) => ({ default: m.RatingBreakdown }))
@@ -80,9 +81,10 @@ export const RestaurantDetailPage = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 space-y-6">
-        <div className="h-72 rounded-3xl bg-slate-200 animate-pulse" />
-        <div className="h-40 rounded-2xl bg-slate-200 animate-pulse" />
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+          <DatabaseLoader message="Fetching restaurant profile & menu..." subtitle="Retrieving digital menu, multi-criteria breakdown & tasting notes from database" />
+        </div>
       </div>
     );
   }
