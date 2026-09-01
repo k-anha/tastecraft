@@ -4,6 +4,19 @@ import { useToast } from './ToastContext';
 
 const AuthContext = createContext(null);
 
+const extractErrorMessage = (err, fallback) => {
+  if (!err) return fallback;
+  const detail = err.response?.data?.detail;
+  if (typeof detail === 'string') return detail;
+  if (Array.isArray(detail)) {
+    return detail.map((d) => (d?.msg ? String(d.msg).replace('Value error, ', '') : JSON.stringify(d))).join('. ');
+  }
+  if (detail && typeof detail === 'object') {
+    return detail.msg || detail.message || JSON.stringify(detail);
+  }
+  return err.message || fallback;
+};
+
 export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(() => {
     const saved = localStorage.getItem('tastecraft_user');
@@ -54,7 +67,7 @@ export const AuthProvider = ({ children }) => {
       showSuccess(`Welcome back, ${userData.full_name || userData.username}!`);
       return userData;
     } catch (err) {
-      const message = err.response?.data?.detail || 'Failed to sign in. Please check your credentials and try again.';
+      const message = extractErrorMessage(err, 'Failed to sign in. Please check your credentials and try again.');
       showError(message);
       throw err;
     }
@@ -73,7 +86,7 @@ export const AuthProvider = ({ children }) => {
       showSuccess('Account created successfully! Welcome to TasteCraft.');
       return newUser;
     } catch (err) {
-      const message = err.response?.data?.detail || 'Registration failed. Please verify the input fields.';
+      const message = extractErrorMessage(err, 'Registration failed. Please check the email and input fields.');
       showError(message);
       throw err;
     }
@@ -87,7 +100,7 @@ export const AuthProvider = ({ children }) => {
       showSuccess('Profile updated successfully!');
       return res.data;
     } catch (err) {
-      const message = err.response?.data?.detail || 'Failed to update profile.';
+      const message = extractErrorMessage(err, 'Failed to update profile.');
       showError(message);
       throw err;
     }

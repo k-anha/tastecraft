@@ -7,6 +7,7 @@ import { PageMemoryProvider } from './context/PageMemoryContext';
 import { Navbar } from './components/Navbar';
 import { Footer } from './components/Footer';
 import { LoadingFallback } from './components/LoadingFallback';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 // Lazy load route pages on-demand
 const HomePage = lazy(() =>
@@ -33,6 +34,9 @@ const LoginPage = lazy(() =>
 const RegisterPage = lazy(() =>
   import('./pages/RegisterPage').then((module) => ({ default: module.RegisterPage }))
 );
+const NotFoundPage = lazy(() =>
+  import('./pages/NotFoundPage').then((module) => ({ default: module.NotFoundPage }))
+);
 
 function App() {
   return (
@@ -44,19 +48,23 @@ function App() {
               <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
                 <Navbar />
                 <main className="flex-1 flex flex-col">
-                  <Suspense fallback={<LoadingFallback />}>
-                    <Routes>
-                      <Route path="/" element={<HomePage />} />
-                      <Route path="/explore" element={<ExplorePage />} />
-                      <Route path="/restaurants/:id" element={<RestaurantDetailPage />} />
-                      <Route path="/write-review" element={<WriteReviewPage />} />
-                      <Route path="/write-review/:restaurantId" element={<WriteReviewPage />} />
-                      <Route path="/add-restaurant" element={<AddRestaurantPage />} />
-                      <Route path="/profile" element={<ProfilePage />} />
-                      <Route path="/login" element={<LoginPage />} />
-                      <Route path="/register" element={<RegisterPage />} />
-                    </Routes>
-                  </Suspense>
+                  <ErrorBoundary>
+                    <Suspense fallback={<LoadingFallback />}>
+                      <Routes>
+                        <Route path="/" element={<HomePage />} />
+                        <Route path="/explore" element={<ExplorePage />} />
+                        <Route path="/restaurants/:id" element={<RestaurantDetailPage />} />
+                        <Route path="/write-review" element={<WriteReviewPage />} />
+                        <Route path="/write-review/:restaurantId" element={<WriteReviewPage />} />
+                        <Route path="/add-restaurant" element={<AddRestaurantPage />} />
+                        <Route path="/profile" element={<ProfilePage />} />
+                        <Route path="/login" element={<LoginPage />} />
+                        <Route path="/register" element={<RegisterPage />} />
+                        {/* 404 & Invalid Route Catch-all */}
+                        <Route path="*" element={<NotFoundPage />} />
+                      </Routes>
+                    </Suspense>
+                  </ErrorBoundary>
                 </main>
                 <Footer />
               </div>

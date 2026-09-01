@@ -3,10 +3,31 @@ import { CheckCircle2, AlertCircle, Info, X } from 'lucide-react';
 
 const ToastContext = createContext(null);
 
+const sanitizeToastMessage = (msg) => {
+  if (typeof msg === 'string') return msg;
+  if (Array.isArray(msg)) {
+    return msg
+      .map((item) => {
+        if (typeof item === 'string') return item;
+        if (item?.msg) return String(item.msg).replace('Value error, ', '');
+        return JSON.stringify(item);
+      })
+      .join('. ');
+  }
+  if (msg && typeof msg === 'object') {
+    if (msg.detail) return sanitizeToastMessage(msg.detail);
+    if (msg.message) return sanitizeToastMessage(msg.message);
+    if (msg.msg) return String(msg.msg).replace('Value error, ', '');
+    return JSON.stringify(msg);
+  }
+  return String(msg || 'An unexpected notification occurred.');
+};
+
 export const ToastProvider = ({ children }) => {
   const [toasts, setToasts] = useState([]);
 
-  const addToast = useCallback((message, type = 'info', duration = 4000) => {
+  const addToast = useCallback((rawMessage, type = 'info', duration = 4500) => {
+    const message = sanitizeToastMessage(rawMessage);
     const id = Date.now() + Math.random().toString(36).substring(2, 9);
     setToasts((prev) => [...prev, { id, message, type }]);
 
@@ -29,27 +50,28 @@ export const ToastProvider = ({ children }) => {
     <ToastContext.Provider value={{ addToast, removeToast, showSuccess, showError, showInfo }}>
       {children}
       {/* Toast Render Container */}
-      <div className="fixed bottom-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none">
+      <div className="fixed bottom-5 right-5 z-50 flex flex-col space-y-3 pointer-events-none max-w-md w-full px-4">
         {toasts.map((toast) => (
           <div
             key={toast.id}
-            className={`pointer-events-auto flex items-center justify-between gap-3 p-4 rounded-xl shadow-lg border backdrop-blur-md transition-all duration-300 max-w-md ${
+            className={`pointer-events-auto flex items-start justify-between gap-3 p-4 rounded-2xl shadow-xl border backdrop-blur-md transition-all duration-300 ${
               toast.type === 'success'
-                ? 'bg-emerald-50/95 border-emerald-200 text-emerald-900'
+                ? 'bg-emerald-50/95 border-emerald-200 text-emerald-900 shadow-emerald-500/10'
                 : toast.type === 'error'
-                ? 'bg-rose-50/95 border-rose-200 text-rose-900'
-                : 'bg-slate-900/95 border-slate-700 text-white'
+                ? 'bg-rose-50/95 border-rose-200 text-rose-900 shadow-rose-500/10'
+                : 'bg-slate-900/95 border-slate-700 text-white shadow-slate-900/20'
             }`}
           >
-            <div className="flex items-center gap-3">
-              {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0" />}
-              {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0" />}
-              {toast.type === 'info' && <Info className="w-5 h-5 text-brand-400 flex-shrink-0" />}
-              <p className="text-sm font-medium">{toast.message}</p>
+            <div className="flex items-start gap-3">
+              {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />}
+              {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />}
+              {toast.type === 'info' && <Info className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />}
+              <p className="text-xs sm:text-sm font-medium leading-snug break-words">{toast.message}</p>
             </div>
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md"
+              className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md ml-2 flex-shrink-0"
+              aria-label="Close notification"
             >
               <X className="w-4 h-4" />
             </button>
@@ -67,4 +89,3 @@ export const useToast = () => {
   }
   return context;
 };
-

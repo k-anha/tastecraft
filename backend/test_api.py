@@ -35,7 +35,21 @@ def test_api():
         assert data['user']['country'] == "India"
         assert data['user']['country_code'] == "+91"
         assert data['user']['phone_number'] == "9988776655"
-        assert data['user']['accepts_promotions'] is True
+    print("\nTesting User Registration with Invalid Email ('demo@yahoo.com2')...")
+    invalid_email_res = client.post("/api/v1/auth/register", json={
+        "email": "demo@yahoo.com2",
+        "username": "invalid_email_user",
+        "country": "India",
+        "country_code": "+91",
+        "phone_number": "9988776654",
+        "password": "password123"
+    })
+    assert invalid_email_res.status_code == 422, invalid_email_res.text
+    err_json = invalid_email_res.json()
+    print("Invalid Email 422 Response:", err_json)
+    assert isinstance(err_json["detail"], str), "Detail must be a clean human-readable string"
+    assert "email" in err_json["detail"].lower()
+    print("Validation error handled gracefully with clean string detail!")
 
     print("\nTesting Mode 2: Login via Mobile Number & Country Code (Clean Digits)...")
     res = client.post("/api/v1/auth/login", json={

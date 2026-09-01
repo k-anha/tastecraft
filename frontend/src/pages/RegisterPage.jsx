@@ -3,11 +3,13 @@ import { Link, useNavigate } from 'react-router-dom';
 import { UtensilsCrossed, Lock, Mail, User, Phone, ArrowRight, Bell, Sparkles } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCountry } from '../context/CountryContext';
+import { useToast } from '../context/ToastContext';
 
 export const RegisterPage = () => {
   const navigate = useNavigate();
   const { register } = useAuth();
   const { country, countries, setCountry } = useCountry();
+  const { showError } = useToast();
 
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
@@ -30,16 +32,31 @@ export const RegisterPage = () => {
 
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    // Validate email format on client-side
+    const cleanEmail = email.trim().toLowerCase();
+    const emailPattern = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    if (!emailPattern.test(cleanEmail)) {
+      showError('Please enter a valid email address with a valid domain (e.g. user@example.com).');
+      return;
+    }
+
+    if (phoneDigits && phoneDigits.length < minDigits) {
+      showError(`Contact number for ${country.name} must be ${minDigits} digits.`);
+      return;
+    }
+
+    if (password.length < 6) {
+      showError('Password must be at least 6 characters.');
+      return;
+    }
+
     setLoading(true);
     try {
-      if (phoneDigits && phoneDigits.length < minDigits) {
-        throw new Error(`Contact number for ${country.name} must be ${minDigits} digits.`);
-      }
-
       await register({
         full_name: fullName.trim(),
         username: username.trim(),
-        email: email.trim(),
+        email: cleanEmail,
         country: country.name,
         country_code: country.callingCode,
         phone_number: phoneDigits.trim(),
@@ -49,7 +66,7 @@ export const RegisterPage = () => {
       });
       navigate('/');
     } catch (err) {
-      // Handled in auth context
+      // Error notification handled by AuthContext via Toast
     } finally {
       setLoading(false);
     }
