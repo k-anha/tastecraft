@@ -187,6 +187,18 @@ def create_restaurant(
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user)
 ):
+    # Enforce that only restaurant owners or admins can register a new restaurant listing
+    if current_user.role != "owner" and current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only registered restaurant owners can register a new restaurant. Please update your account role to owner in your profile or during registration."
+        )
+
+    # Use restaurant owner's profile contact number if not explicitly specified
+    restaurant_phone = restaurant_in.phone_number
+    if not restaurant_phone and current_user.phone_number:
+        restaurant_phone = f"{current_user.country_code or ''} {current_user.phone_number}".strip()
+
     restaurant = Restaurant(
         name=restaurant_in.name,
         description=restaurant_in.description,
@@ -196,7 +208,7 @@ def create_restaurant(
         city=restaurant_in.city,
         state=restaurant_in.state,
         zip_code=restaurant_in.zip_code,
-        phone_number=restaurant_in.phone_number,
+        phone_number=restaurant_phone,
         website=restaurant_in.website,
         opening_hours=restaurant_in.opening_hours,
         image_url=restaurant_in.image_url or "https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=800&q=80",
@@ -264,3 +276,88 @@ def delete_restaurant(
     db.commit()
     return None
 
+# Upload Food Items / Dishes with Images (Open to ANY authenticated food lover or owner)
+@router.post("/{restaurant_id}/menu", response_model=MenuItemOut, status_code=status.HTTP_201_CREATED)
+def add_menu_item(
+    restaurant_id: int,
+    item_in: MenuItemCreate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    restaurant = db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
+    if not restaurant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restaurant not found")
+
+    menu_item = MenuItem(
+        restaurant_id=restaurant.id,
+        name=item_in.name.strip(),
+        description=item_in.description,
+        category=item_in.category or "Dishes",
+        price=float(item_in.price) if item_in.price is not None else 0.0,
+        image_url=item_in.image_url or "https://images.unsplash.com/photo-1546069901-ba9599a7e63c?w=600&q=80",
+        is_signature=item_in.is_signature or False
+    )
+    db.add(menu_item)
+    db.commit()
+    db.refresh(menu_item)
+    return MenuItemOut.model_validate(menu_item)
+
+# Delete Food Items from Restaurant Menu (Owner or Admin)
+@router.delete("/{restaurant_id}/menu/{menu_item_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_menu_item(
+    restaurant_id: int,
+    menu_item_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    restaurant = db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
+    if not restaurant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restaurant not found")
+
+    menu_item = db.query(MenuItem).filter(
+        MenuItem.id == menu_item_id, 
+        MenuItem.restaurant_id == restaurant_id
+    ).first()
+    if not menu_item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found")
+
+    if restaurant.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Only the restaurant owner can delete items from this menu."
+        )
+
+    db.delete(menu_item)
+    db.commit()
+    return None
+
+# Claim Ownership of an Unclaimed Restaurant (Owner Only)
+@router.post("/{restaurant_id}/claim", response_model=RestaurantDetailOut)
+def claim_restaurant(
+    restaurant_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    if current_user.role != "owner" and current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="Only registered restaurant owners can claim a restaurant listing."
+        )
+
+    restaurant = db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
+    if not restaurant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restaurant not found")
+
+    if restaurant.owner_id and restaurant.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="This restaurant is already claimed by another owner."
+        )
+
+    restaurant.owner_id = current_user.id
+    if not restaurant.phone_number and current_user.phone_number:
+        restaurant.phone_number = f"{current_user.country_code or ''} {current_user.phone_number}".strip()
+
+    db.commit()
+    db.refresh(restaurant)
+    return get_restaurant(restaurant.id, db, current_user)

@@ -69,6 +69,7 @@ def register(user_in: UserCreate, db: Session = Depends(get_db)):
         id=user_id,
         email=user_in.email.strip(),
         username=user_in.username.strip(),
+        gender=user_in.gender,
         country=country_name,
         country_code=clean_cc,
         phone_number=clean_phone,
@@ -102,28 +103,24 @@ def login(login_data: UserLogin, db: Session = Depends(get_db)):
             user = db.query(User).filter(
                 and_(User.country_code == clean_cc, User.phone_number == clean_phone)
             ).first()
-
-        # Fallback without matching country code if not matched
+        
         if not user:
+            # Fallback check by phone alone if country_code was omitted
             user = db.query(User).filter(User.phone_number == clean_phone).first()
-
-        # Fallback matching last 10 or 11 digits
-        if not user and clean_phone and len(clean_phone) > 10:
-            user = db.query(User).filter(User.phone_number == clean_phone[-10:]).first()
 
     # Mode 1: Email or Username Login
     elif login_data.email_or_username and login_data.email_or_username.strip():
         identifier = login_data.email_or_username.strip()
-        clean_digits = clean_phone_digits(identifier)
-
-        filters = [
-            User.email == identifier,
-            User.username == identifier
-        ]
-        if clean_digits:
-            filters.append(User.phone_number == clean_digits)
-
-        user = db.query(User).filter(or_(*filters)).first()
+        # Check if identifier was typed as email, username, or clean digits
+        if "@" in identifier:
+            user = db.query(User).filter(User.email == identifier).first()
+        else:
+            user = db.query(User).filter(User.username == identifier).first()
+            if not user:
+                # Also allow phone lookup in mode 1 if user typed their digits
+                clean_digits = clean_phone_digits(identifier)
+                if clean_digits:
+                    user = db.query(User).filter(User.phone_number == clean_digits).first()
 
     if not user or not verify_password(login_data.password, user.hashed_password):
         raise HTTPException(
@@ -151,6 +148,8 @@ def update_current_user(
 ):
     if user_update.full_name is not None:
         current_user.full_name = user_update.full_name
+    if user_update.gender is not None:
+        current_user.gender = user_update.gender
     if user_update.country is not None:
         current_user.country = user_update.country
     if user_update.country_code is not None:
@@ -161,6 +160,8 @@ def update_current_user(
         current_user.avatar_url = user_update.avatar_url
     if user_update.bio is not None:
         current_user.bio = user_update.bio
+    if user_update.role is not None and user_update.role in ["user", "owner", "admin"]:
+        current_user.role = user_update.role
     if user_update.accepts_promotions is not None:
         current_user.accepts_promotions = user_update.accepts_promotions
     if user_update.password:

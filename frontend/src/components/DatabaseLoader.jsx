@@ -37,3 +37,4 @@ export const DatabaseLoader = ({ message = "Fetching data from database...", sub
     </div>
   );
 };
+

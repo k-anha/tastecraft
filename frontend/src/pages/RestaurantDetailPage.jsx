@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Star, MapPin, Phone, Globe, Clock, Bookmark, Edit3, 
   Utensils, CheckCircle2, ChevronRight, Share2, Sparkles, 
-  DollarSign, HeartHandshake, ShieldCheck, Tag
+  DollarSign, HeartHandshake, ShieldCheck, Tag, Trash2, Plus, X, Image, AlertCircle 
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -22,36 +22,49 @@ const ReviewCard = lazy(() =>
 export const RestaurantDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
+  const { formatPrice, getPriceTier, currencySymbol } = useCurrency();
 
   const [restaurant, setRestaurant] = useState(null);
   const [reviews, setReviews] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'reviews' | 'menu'
+  const [activeTab, setActiveTab] = useState('overview'); // 'overview' | 'reviews'
   const [selectedMenuCategory, setSelectedMenuCategory] = useState('All');
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
 
-  useEffect(() => {
-    const fetchRestaurantData = async () => {
-      setLoading(true);
-      try {
-        const [restRes, revRes] = await Promise.all([
-          api.get(`/restaurants/${id}`),
-          api.get(`/reviews/restaurant/${id}`),
-        ]);
-        setRestaurant(restRes.data);
-        setIsBookmarked(restRes.data.is_bookmarked || false);
-        setReviews(revRes.data);
-      } catch (err) {
-        console.error('Failed to load restaurant detail:', err);
-        showError('Could not find the requested restaurant.');
-      } finally {
-        setLoading(false);
-      }
-    };
+  // Add Dish Modal State (Open to ANY authenticated user)
+  const [addDishModalOpen, setAddDishModalOpen] = useState(false);
+  const [dishName, setDishName] = useState('');
+  const [dishCategory, setDishCategory] = useState('Mains');
+  const [dishPrice, setDishPrice] = useState('');
+  const [dishDescription, setDishDescription] = useState('');
+  const [dishImageUrl, setDishImageUrl] = useState('');
+  const [dishIsSignature, setDishIsSignature] = useState(false);
+  const [dishSubmitting, setDishSubmitting] = useState(false);
 
+  // Deleting State
+  const [deletingRestaurant, setDeletingRestaurant] = useState(false);
+
+  const fetchRestaurantData = async () => {
+    try {
+      const [restRes, revRes] = await Promise.all([
+        api.get(`/restaurants/${id}`),
+        api.get(`/reviews/restaurant/${id}`),
+      ]);
+      setRestaurant(restRes.data);
+      setIsBookmarked(restRes.data.is_bookmarked || false);
+      setReviews(revRes.data);
+    } catch (err) {
+      console.error('Failed to load restaurant detail:', err);
+      showError('Could not find the requested restaurant.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
     fetchRestaurantData();
   }, [id]);
 
@@ -79,6 +92,89 @@ export const RestaurantDetailPage = () => {
     }
   };
 
+  // Add Food Item (Open to ALL authenticated users)
+  const handleAddDishSubmit = async (e) => {
+    e.preventDefault();
+    if (!isAuthenticated) {
+      showInfo('Please sign in to contribute food items and images.');
+      navigate('/login');
+      return;
+    }
+    if (!dishName.trim() || !dishPrice) {
+      showError('Please provide a dish name and price.');
+      return;
+    }
+
+    setDishSubmitting(true);
+    try {
+      const payload = {
+        name: dishName.trim(),
+        category: dishCategory,
+        price: parseFloat(dishPrice),
+        description: dishDescription.trim() || null,
+        image_url: dishImageUrl.trim() || null,
+        is_signature: dishIsSignature,
+      };
+
+      await api.post(`/restaurants/${id}/menu`, payload);
+      showSuccess(`"${dishName}" added to the digital menu!`);
+      setDishName('');
+      setDishPrice('');
+      setDishDescription('');
+      setDishImageUrl('');
+      setDishIsSignature(false);
+      setAddDishModalOpen(false);
+      fetchRestaurantData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to add dish item.');
+    } finally {
+      setDishSubmitting(false);
+    }
+  };
+
+  // Delete Food Item (Owner / Admin)
+  const handleDeleteMenuItem = async (menuItemId, menuItemName) => {
+    if (!window.confirm(`Are you sure you want to remove "${menuItemName}" from the menu?`)) {
+      return;
+    }
+
+    try {
+      await api.delete(`/restaurants/${id}/menu/${menuItemId}`);
+      showSuccess(`"${menuItemName}" removed from menu.`);
+      fetchRestaurantData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to remove dish item.');
+    }
+  };
+
+  // Delete Entire Restaurant (Owner / Admin)
+  const handleDeleteRestaurant = async () => {
+    if (!window.confirm(`Are you sure you want to permanently delete "${restaurant.name}"? All reviews, menu items, and photos will be removed permanently.`)) {
+      return;
+    }
+
+    setDeletingRestaurant(true);
+    try {
+      await api.delete(`/restaurants/${id}`);
+      showSuccess(`"${restaurant.name}" has been deleted.`);
+      navigate('/explore');
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to delete restaurant.');
+      setDeletingRestaurant(false);
+    }
+  };
+
+  // Claim Restaurant (Owner)
+  const handleClaimRestaurant = async () => {
+    try {
+      await api.post(`/restaurants/${id}/claim`);
+      showSuccess(`Congratulations! You have claimed ownership of "${restaurant.name}".`);
+      fetchRestaurantData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to claim restaurant.');
+    }
+  };
+
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -100,7 +196,8 @@ export const RestaurantDetailPage = () => {
     );
   }
 
-  const { formatPrice, getPriceTier } = useCurrency();
+  const isOwner = isAuthenticated && (user?.id === restaurant.owner_id || user?.role === 'admin');
+  const canClaim = isAuthenticated && user?.role === 'owner' && !restaurant.owner_id;
   const priceSymbols = getPriceTier(restaurant.price_range || 2);
   const stats = restaurant.stats || {};
   const menuItems = restaurant.menu_items || [];
@@ -153,6 +250,11 @@ export const RestaurantDetailPage = () => {
                   <MapPin className="w-3.5 h-3.5 text-slate-400" />
                   {restaurant.city}, {restaurant.state || ''}
                 </span>
+                {isOwner && (
+                  <span className="px-3 py-1 rounded-full bg-amber-500 text-white text-xs font-bold flex items-center gap-1 shadow-sm">
+                    <ShieldCheck className="w-3.5 h-3.5" /> You Own This Listing
+                  </span>
+                )}
               </div>
 
               <h1 className="font-serif-brand text-3xl sm:text-5xl font-extrabold text-white tracking-tight">
@@ -186,6 +288,28 @@ export const RestaurantDetailPage = () => {
 
             {/* Actions Buttons */}
             <div className="flex flex-wrap items-center gap-3 pt-4 lg:pt-0">
+              {canClaim && (
+                <button
+                  onClick={handleClaimRestaurant}
+                  className="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all"
+                >
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Claim Ownership</span>
+                </button>
+              )}
+
+              {isOwner && (
+                <button
+                  onClick={handleDeleteRestaurant}
+                  disabled={deletingRestaurant}
+                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all"
+                  title="Delete this restaurant listing"
+                >
+                  <Trash2 className="w-4 h-4" />
+                  <span>{deletingRestaurant ? 'Deleting...' : 'Delete Restaurant'}</span>
+                </button>
+              )}
+
               <button
                 onClick={handleToggleBookmark}
                 disabled={bookmarkLoading}
@@ -283,31 +407,60 @@ export const RestaurantDetailPage = () => {
                       Signature Dishes & Menu
                     </h3>
                     <p className="text-xs text-slate-500 mt-0.5">
-                      Explore house specialties and customer favorites.
+                      Explore house specialties or contribute your favorite dishes and food photos.
                     </p>
                   </div>
 
-                  {/* Category Filter Pills */}
-                  <div className="flex flex-wrap gap-1.5">
-                    {categories.map((cat) => (
-                      <button
-                        key={cat}
-                        onClick={() => setSelectedMenuCategory(cat)}
-                        className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
-                          selectedMenuCategory === cat
-                            ? 'bg-brand-500 text-white shadow-sm'
-                            : 'bg-slate-100 hover:bg-slate-200/70 text-slate-700'
-                        }`}
-                      >
-                        {cat}
-                      </button>
-                    ))}
+                  <div className="flex flex-wrap items-center gap-2">
+                    {/* Add Dish Button (Open to ANY user) */}
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (!isAuthenticated) {
+                          showInfo('Please sign in to add a dish or food photo.');
+                          navigate('/login');
+                        } else {
+                          setAddDishModalOpen(true);
+                        }
+                      }}
+                      className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-sm transition-all"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>Add Dish / Photo</span>
+                    </button>
                   </div>
+                </div>
+
+                {/* Category Filter Pills */}
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat}
+                      onClick={() => setSelectedMenuCategory(cat)}
+                      className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
+                        selectedMenuCategory === cat
+                          ? 'bg-brand-500 text-white shadow-sm'
+                          : 'bg-slate-100 hover:bg-slate-200/70 text-slate-700'
+                      }`}
+                    >
+                      {cat}
+                    </button>
+                  ))}
                 </div>
 
                 {/* Menu Items Grid */}
                 {filteredMenuItems.length === 0 ? (
-                  <p className="text-xs text-slate-500 py-6 text-center">No menu items listed in this category.</p>
+                  <div className="py-8 text-center space-y-3">
+                    <Utensils className="w-8 h-8 text-slate-300 mx-auto" />
+                    <p className="text-xs text-slate-500">No menu items listed in this category yet.</p>
+                    <button
+                      type="button"
+                      onClick={() => setAddDishModalOpen(true)}
+                      className="text-xs font-bold text-brand-600 hover:underline"
+                    >
+                      + Be the first to add a dish
+                    </button>
+                  </div>
                 ) : (
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     {filteredMenuItems.map((item) => (
@@ -315,6 +468,15 @@ export const RestaurantDetailPage = () => {
                         key={item.id}
                         className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between"
                       >
+                        {item.image_url && (
+                          <div className="mb-3 rounded-lg overflow-hidden h-32 w-full bg-slate-100">
+                            <img
+                              src={item.image_url}
+                              alt={item.name}
+                              className="w-full h-full object-cover hover:scale-105 transition-transform"
+                            />
+                          </div>
+                        )}
                         <div className="space-y-1.5">
                           <div className="flex items-start justify-between gap-2">
                             <h4 className="font-bold text-slate-900 text-sm leading-snug">
@@ -341,12 +503,25 @@ export const RestaurantDetailPage = () => {
 
                         <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                           <span className="font-medium">{item.category}</span>
-                          <Link
-                            to={`/write-review/${restaurant.id}`}
-                            className="text-brand-600 hover:underline font-bold"
-                          >
-                            Review Dish →
-                          </Link>
+                          
+                          <div className="flex items-center gap-2">
+                            {isOwner && (
+                              <button
+                                type="button"
+                                onClick={() => handleDeleteMenuItem(item.id, item.name)}
+                                className="text-rose-500 hover:text-rose-700 p-1"
+                                title="Delete food item"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            )}
+                            <Link
+                              to={`/write-review/${restaurant.id}`}
+                              className="text-brand-600 hover:underline font-bold"
+                            >
+                              Review Dish →
+                            </Link>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -355,92 +530,223 @@ export const RestaurantDetailPage = () => {
               </div>
             </div>
 
-            {/* Right Col: Scorecard & Quick Review CTA */}
+            {/* Right Col: Rating Breakdown Card */}
             <div className="space-y-6">
-              <Suspense fallback={<div className="h-64 bg-slate-100 rounded-2xl animate-pulse" />}>
+              <Suspense fallback={<div className="h-96 bg-white rounded-2xl border animate-pulse" />}>
                 <RatingBreakdown stats={stats} />
               </Suspense>
 
-              {/* Review CTA Box */}
-              <div className="bg-gradient-to-br from-brand-50 to-amber-50 rounded-2xl border border-brand-200/60 p-6 text-center space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-brand-500 text-white flex items-center justify-center mx-auto shadow-md shadow-brand-500/30">
-                  <Edit3 className="w-6 h-6" />
-                </div>
-                <div className="space-y-1">
-                  <h4 className="font-bold text-slate-900 text-base">Visited {restaurant.name}?</h4>
-                  <p className="text-xs text-slate-600">
-                    Help other diners by scoring the food, prices, service, and your favorite dishes!
-                  </p>
-                </div>
-                <Link
-                  to={`/write-review/${restaurant.id}`}
-                  className="w-full inline-block py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-extrabold shadow-md shadow-brand-500/25 transition-all"
-                >
-                  Write a Multi-Criteria Review
-                </Link>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Reviews Tab */}
-        {activeTab === 'reviews' && (
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-1 space-y-6">
-              <Suspense fallback={<div className="h-64 bg-slate-100 rounded-2xl animate-pulse" />}>
-                <RatingBreakdown stats={stats} />
-              </Suspense>
-              
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-6 text-center space-y-3">
-                <h4 className="font-bold text-slate-900 text-sm">Have you dined here?</h4>
-                <p className="text-xs text-slate-500">
-                  Your feedback helps the culinary community discover the best food in town.
-                </p>
-                <Link
-                  to={`/write-review/${restaurant.id}`}
-                  className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md shadow-brand-500/20 transition-all"
-                >
-                  <Edit3 className="w-4 h-4" />
-                  Write Review
-                </Link>
-              </div>
-            </div>
-
-            <div className="lg:col-span-2 space-y-6">
-              <div className="flex items-center justify-between">
-                <h3 className="font-serif-brand text-2xl font-bold text-slate-900">
-                  Verified Reviews ({reviews.length})
-                </h3>
-              </div>
-
-              {reviews.length === 0 ? (
-                <div className="bg-white rounded-2xl border border-dashed border-slate-300 p-12 text-center space-y-4">
-                  <Utensils className="w-10 h-10 text-slate-400 mx-auto" />
-                  <h4 className="font-bold text-slate-800 text-base">No reviews yet</h4>
-                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                    Be the first food enthusiast to share your thoughts on the food, prices, and service at {restaurant.name}.
-                  </p>
-                  <Link
-                    to={`/write-review/${restaurant.id}`}
-                    className="inline-block px-5 py-2 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md"
-                  >
-                    Write First Review
-                  </Link>
+              {/* Owner Info Card */}
+              {restaurant.owner_id ? (
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-3">
+                  <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+                  <div className="text-xs">
+                    <p className="font-bold text-slate-900">Verified Restaurant Listing</p>
+                    <p className="text-slate-500">Managed directly by the official restaurant team.</p>
+                  </div>
                 </div>
               ) : (
-                <div className="space-y-6">
-                  <Suspense fallback={<div className="space-y-4"><div className="h-44 bg-slate-100 rounded-2xl animate-pulse" /><div className="h-44 bg-slate-100 rounded-2xl animate-pulse" /></div>}>
-                    {reviews.map((rev) => (
-                      <ReviewCard key={rev.id} review={rev} />
-                    ))}
-                  </Suspense>
+                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-3">
+                  <div className="text-xs">
+                    <p className="font-bold">Unclaimed Listing</p>
+                    <p className="text-[11px] text-amber-800">Are you the owner of this establishment?</p>
+                  </div>
+                  {user?.role === 'owner' ? (
+                    <button
+                      onClick={handleClaimRestaurant}
+                      className="px-3 py-1.5 rounded-lg bg-amber-600 text-white font-bold text-xs shadow-sm hover:bg-amber-700 flex-shrink-0"
+                    >
+                      Claim
+                    </button>
+                  ) : (
+                    <Link
+                      to="/login"
+                      className="text-xs font-bold text-amber-900 underline flex-shrink-0"
+                    >
+                      Sign In
+                    </Link>
+                  )}
                 </div>
               )}
             </div>
           </div>
         )}
+
+        {/* Customer Reviews Tab */}
+        {activeTab === 'reviews' && (
+          <div className="space-y-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <h3 className="font-serif-brand text-2xl font-bold text-slate-900">
+                  Verified Diner Experiences ({reviews.length})
+                </h3>
+                <p className="text-xs text-slate-500">
+                  Real reviews with multi-dimensional breakdowns and dish tasting notes.
+                </p>
+              </div>
+
+              <Link
+                to={`/write-review/${restaurant.id}`}
+                className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold flex items-center gap-1.5 shadow-md shadow-brand-500/20 self-start sm:self-auto"
+              >
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Write a Review</span>
+              </Link>
+            </div>
+
+            {reviews.length === 0 ? (
+              <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-4">
+                <Utensils className="w-10 h-10 text-slate-300 mx-auto" />
+                <h4 className="font-bold text-slate-700 text-base">No reviews yet</h4>
+                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                  Be the first gourmet diner to share feedback on food quality, service, value, and ambiance!
+                </p>
+                <Link
+                  to={`/write-review/${restaurant.id}`}
+                  className="inline-block px-5 py-2.5 rounded-full bg-brand-500 text-white text-xs font-bold shadow-md shadow-brand-500/20 hover:bg-brand-600"
+                >
+                  Write the First Review
+                </Link>
+              </div>
+            ) : (
+              <div className="space-y-6">
+                <Suspense fallback={<div className="h-60 bg-slate-100 rounded-2xl animate-pulse" />}>
+                  {reviews.map((review) => (
+                    <ReviewCard key={review.id} review={review} onUpdate={fetchRestaurantData} />
+                  ))}
+                </Suspense>
+              </div>
+            )}
+          </div>
+        )}
       </main>
+
+      {/* Add Food Item / Dish Modal (Open to Anyone) */}
+      {addDishModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                  <Utensils className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Add Dish & Food Photo</h3>
+                  <p className="text-[11px] text-slate-500">Upload menu items for {restaurant.name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setAddDishModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleAddDishSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Crispy Pork Belly Bao"
+                  value={dishName}
+                  onChange={(e) => setDishName(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Category</label>
+                  <select
+                    value={dishCategory}
+                    onChange={(e) => setDishCategory(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Mains">Mains</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Drinks">Drinks</option>
+                    <option value="Specials">Specials</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price *</label>
+                  <div className="relative">
+                    <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      required
+                      placeholder="18.5"
+                      value={dishPrice}
+                      onChange={(e) => setDishPrice(e.target.value)}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-7 pr-3 py-2.5 text-slate-800 font-bold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Photo URL</label>
+                <div className="relative">
+                  <Image className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <input
+                    type="url"
+                    placeholder="https://images.unsplash.com/..."
+                    value={dishImageUrl}
+                    onChange={(e) => setDishImageUrl(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Ingredients</label>
+                <textarea
+                  rows={2}
+                  placeholder="Key flavors, cooking style, or dietary highlights..."
+                  value={dishDescription}
+                  onChange={(e) => setDishDescription(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={dishIsSignature}
+                    onChange={(e) => setDishIsSignature(e.target.checked)}
+                    className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-slate-700">Mark as House Signature Dish</span>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setAddDishModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={dishSubmitting}
+                  className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-brand-500/20"
+                >
+                  {dishSubmitting ? 'Uploading...' : 'Publish Dish'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
-

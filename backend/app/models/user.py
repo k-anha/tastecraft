@@ -11,6 +11,7 @@ class User(Base):
     id = Column(String(64), primary_key=True, default=generate_user_id, index=True)
     email = Column(String(255), unique=True, index=True, nullable=False)
     username = Column(String(100), unique=True, index=True, nullable=False)
+    gender = Column(String(20), nullable=True, default=None)              # 'Male', 'Female', 'Non-binary', 'Prefer not to say'
     country = Column(String(100), nullable=True, default="India")          # Country Name: 'India', 'America', 'China', 'Japan'
     country_code = Column(String(10), nullable=True, default="+91")       # Dial Code: '+91', '+1', '+86', '+81'
     phone_number = Column(String(20), index=True, nullable=True)          # Contact number without spaces (digits only)

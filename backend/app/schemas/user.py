@@ -5,6 +5,7 @@ from pydantic import BaseModel, EmailStr
 class UserBase(BaseModel):
     email: EmailStr
     username: str
+    gender: Optional[str] = None
     country: Optional[str] = "India"
     country_code: Optional[str] = "+91"
     phone_number: Optional[str] = None
@@ -18,6 +19,7 @@ class UserCreate(BaseModel):
     email: EmailStr
     username: str
     password: str
+    gender: Optional[str] = None
     country: Optional[str] = "India"
     country_code: Optional[str] = "+91"
     phone_number: Optional[str] = None
@@ -35,11 +37,13 @@ class UserLogin(BaseModel):
 
 class UserUpdate(BaseModel):
     full_name: Optional[str] = None
+    gender: Optional[str] = None
     country: Optional[str] = None
     country_code: Optional[str] = None
     phone_number: Optional[str] = None
     avatar_url: Optional[str] = None
     bio: Optional[str] = None
+    role: Optional[str] = None
     password: Optional[str] = None
     accepts_promotions: Optional[bool] = None
 

@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { 
   Building2, Utensils, MapPin, DollarSign, Image, Clock, 
-  Phone, Globe, Plus, Trash2, ArrowLeft, Star, CheckCircle2 
+  Phone, Globe, Plus, Trash2, ArrowLeft, Star, CheckCircle2, ShieldCheck, Sparkles, AlertCircle 
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -11,7 +11,7 @@ import { useCountry } from '../context/CountryContext';
 
 export const AddRestaurantPage = () => {
   const navigate = useNavigate();
-  const { isAuthenticated } = useAuth();
+  const { user, isAuthenticated, updateProfile } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
   const { country, states, getPriceTier, currencySymbol } = useCountry();
 
@@ -29,6 +29,7 @@ export const AddRestaurantPage = () => {
   const [openingHours, setOpeningHours] = useState('Mon-Sun: 11:00 AM - 10:00 PM');
   const [imageUrl, setImageUrl] = useState('');
   const [coverImageUrl, setCoverImageUrl] = useState('');
+  const [upgradingRole, setUpgradingRole] = useState(false);
 
   useEffect(() => {
     if (country.defaultCity) setCity(country.defaultCity);
@@ -91,11 +92,37 @@ export const AddRestaurantPage = () => {
     setMenuItems(menuItems.filter((_, i) => i !== index));
   };
 
+  const handleUseProfilePhone = () => {
+    if (user?.phone_number) {
+      setPhoneNumber(`${user.country_code || ''} ${user.phone_number}`.trim());
+      showSuccess('Phone number copied from your profile!');
+    } else {
+      showInfo('No phone number saved in your profile. You can enter one manually below.');
+    }
+  };
+
+  const handleUpgradeToOwner = async () => {
+    setUpgradingRole(true);
+    try {
+      await updateProfile({ role: 'owner' });
+      showSuccess('Account upgraded to Restaurant Owner! You can now publish your listing.');
+    } catch (err) {
+      showError('Failed to upgrade account role.');
+    } finally {
+      setUpgradingRole(false);
+    }
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!isAuthenticated) {
       showInfo('Please sign in to list a restaurant.');
       navigate('/login');
+      return;
+    }
+
+    if (user?.role !== 'owner' && user?.role !== 'admin') {
+      showError('Only registered restaurant owners can publish a restaurant. Please upgrade your role.');
       return;
     }
 
@@ -138,10 +165,10 @@ export const AddRestaurantPage = () => {
       };
 
       const res = await api.post('/restaurants', payload);
-      showSuccess('Restaurant created successfully!');
+      showSuccess(`"${res.data.name}" published successfully under your owner profile!`);
       navigate(`/restaurants/${res.data.id}`);
     } catch (err) {
-      const msg = err.response?.data?.detail || 'Failed to create restaurant.';
+      const msg = err.response?.data?.detail || 'Failed to create restaurant listing.';
       showError(msg);
     } finally {
       setSubmitting(false);
@@ -149,47 +176,87 @@ export const AddRestaurantPage = () => {
   };
 
   const commonCuisines = [
-    'Italian',
-    'Japanese',
-    'Mexican',
-    'Indian',
-    'American BBQ',
-    'French',
-    'Mediterranean',
-    'Thai',
-    'Chinese',
-    'Vegan / Healthy',
-    'Cafe & Bakery',
-    'Other',
+    'Italian', 'Japanese', 'Mexican', 'Indian', 'French', 
+    'American', 'Mediterranean', 'Thai', 'Chinese', 'Spanish', 
+    'Vietnamese', 'Korean', 'Bakery & Cafe', 'Seafood', 'Steakhouse', 'Other'
   ];
 
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 py-10 space-y-8">
-      <Link
-        to="/explore"
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
-      >
-        <ArrowLeft className="w-4 h-4" />
-        <span>Back to Explore</span>
-      </Link>
-
-      <div className="space-y-1">
-        <h1 className="font-serif-brand text-3xl font-bold text-slate-900">
-          List a New Restaurant
+    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 space-y-8">
+      {/* Header */}
+      <div className="space-y-2">
+        <Link
+          to="/explore"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+        >
+          <ArrowLeft className="w-4 h-4" />
+          <span>Back to Explore</span>
+        </Link>
+        <h1 className="font-serif-brand text-3xl sm:text-4xl font-extrabold text-slate-900">
+          List Your Restaurant on TasteCraft
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500">
-          Add a restaurant profile, photos, features, and menu items to the TasteCraft directory.
+        <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
+          Showcase your culinary concept, publish your digital menu with high-resolution food imagery, and connect with passionate food lovers.
         </p>
       </div>
 
+      {/* Auth & Role Guard Banner */}
+      {!isAuthenticated ? (
+        <div className="p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 space-y-3">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <AlertCircle className="w-5 h-5 text-amber-600" />
+            <span>Sign In Required</span>
+          </div>
+          <p className="text-xs text-amber-800 leading-relaxed">
+            Please sign in or create an account with Restaurant Owner status to list your business.
+          </p>
+          <Link
+            to="/login"
+            className="inline-block px-5 py-2 rounded-xl bg-amber-600 hover:bg-amber-700 text-white font-bold text-xs shadow-sm"
+          >
+            Sign In Now
+          </Link>
+        </div>
+      ) : user?.role !== 'owner' && user?.role !== 'admin' ? (
+        <div className="p-6 rounded-3xl bg-brand-50 border border-brand-200 text-brand-900 space-y-3">
+          <div className="flex items-center gap-2 font-bold text-sm">
+            <ShieldCheck className="w-5 h-5 text-brand-600" />
+            <span>Restaurant Owner Status Required</span>
+          </div>
+          <p className="text-xs text-brand-800 leading-relaxed">
+            You are currently registered as a <strong>Food Reviewer</strong>. Only verified Restaurant Owners can publish new restaurant profiles.
+          </p>
+          <button
+            type="button"
+            onClick={handleUpgradeToOwner}
+            disabled={upgradingRole}
+            className="px-5 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-700 disabled:opacity-50 text-white font-bold text-xs shadow-md shadow-brand-600/20 flex items-center gap-2 transition-all"
+          >
+            <ShieldCheck className="w-4 h-4" />
+            <span>{upgradingRole ? 'Upgrading Account...' : 'Upgrade My Account to Restaurant Owner (1-Click)'}</span>
+          </button>
+        </div>
+      ) : (
+        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-3">
+          <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0" />
+          <p className="text-xs font-semibold">
+            Signed in as <strong>{user?.full_name || user?.username}</strong> (Restaurant Owner). This listing will be automatically linked to your owner account.
+          </p>
+        </div>
+      )}
+
+      {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
-        {/* Basic Info */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <Building2 className="w-4 h-4 text-brand-500" />
-              1. Basic Information
-            </h3>
+        {/* Basic Restaurant Information */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+              <Building2 className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-base text-slate-900">1. Basic Information</h2>
+              <p className="text-xs text-slate-400">Name, cuisine, and culinary philosophy</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -200,7 +267,7 @@ export const AddRestaurantPage = () => {
               <input
                 type="text"
                 required
-                placeholder="e.g. Trattoria del Porto"
+                placeholder="e.g. Osteria Bella Vista"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="w-full text-sm rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -254,21 +321,21 @@ export const AddRestaurantPage = () => {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Price Range
+                Price Range Tier *
               </label>
               <div className="grid grid-cols-4 gap-2">
-                {[1, 2, 3, 4].map((p) => (
+                {[1, 2, 3, 4].map((tier) => (
                   <button
-                    key={p}
+                    key={tier}
                     type="button"
-                    onClick={() => setPriceRange(p)}
+                    onClick={() => setPriceRange(tier)}
                     className={`py-2 rounded-xl text-xs font-bold transition-all border ${
-                      priceRange === p
-                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
+                      priceRange === tier
+                        ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
                         : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
                     }`}
                   >
-                    {getPriceTier(p)}
+                    {getPriceTier(tier)}
                   </button>
                 ))}
               </div>
@@ -276,13 +343,16 @@ export const AddRestaurantPage = () => {
           </div>
         </div>
 
-        {/* Location & Contact */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <MapPin className="w-4 h-4 text-brand-500" />
-              2. Location & Hours
-            </h3>
+        {/* Location & Contact Details */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+              <MapPin className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-base text-slate-900">2. Location & Contact</h2>
+              <p className="text-xs text-slate-400">Where guests can find and contact you</p>
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -316,7 +386,7 @@ export const AddRestaurantPage = () => {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                State
+                State / Region
               </label>
               <input
                 type="text"
@@ -327,64 +397,80 @@ export const AddRestaurantPage = () => {
               />
             </div>
 
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Phone Number
-              </label>
+            {/* Phone Number with Profile Autofill Option */}
+            <div className="sm:col-span-2">
+              <div className="flex items-center justify-between mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                  Restaurant Phone Number
+                </label>
+                {user?.phone_number && (
+                  <button
+                    type="button"
+                    onClick={handleUseProfilePhone}
+                    className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
+                  >
+                    <Phone className="w-3 h-3" />
+                    <span>Autofill from Profile ({user.country_code || ''} {user.phone_number})</span>
+                  </button>
+                )}
+              </div>
               <input
                 type="text"
                 placeholder="(206) 555-0199"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
+                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+              />
+            </div>
+
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Website URL
+              </label>
+              <input
+                type="url"
+                placeholder="https://www.osteriabv.com"
+                value={website}
+                onChange={(e) => setWebsite(e.target.value)}
                 className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Opening Hours
+                Operating Hours
               </label>
               <input
                 type="text"
-                placeholder="Tue-Sun: 5:00 PM - 10:00 PM"
+                placeholder="Mon-Sun: 11:30 AM - 10:00 PM"
                 value={openingHours}
                 onChange={(e) => setOpeningHours(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
-              />
-            </div>
-
-            <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Website URL
-              </label>
-              <input
-                type="url"
-                placeholder="https://myrestaurant.com"
-                value={website}
-                onChange={(e) => setWebsite(e.target.value)}
                 className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
         </div>
 
-        {/* Photos & Features */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-              <Image className="w-4 h-4 text-brand-500" />
-              3. Visuals & Amenities
-            </h3>
+        {/* Photos & Visuals */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+              <Image className="w-5 h-5" />
+            </div>
+            <div>
+              <h2 className="font-bold text-base text-slate-900">3. High-Resolution Visuals</h2>
+              <p className="text-xs text-slate-400">Showcase dining room ambiance and culinary plating</p>
+            </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Photo URL (Card & Thumbnail)
+                Primary Image URL
               </label>
               <input
                 type="url"
-                placeholder="https://images.unsplash.com/photo-..."
+                placeholder="https://images.unsplash.com/..."
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
                 className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
@@ -393,159 +479,145 @@ export const AddRestaurantPage = () => {
 
             <div>
               <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
-                Cover Banner URL (High Resolution)
+                Hero Banner Image URL
               </label>
               <input
                 type="url"
-                placeholder="https://images.unsplash.com/photo-..."
+                placeholder="https://images.unsplash.com/..."
                 value={coverImageUrl}
                 onChange={(e) => setCoverImageUrl(e.target.value)}
                 className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
-
-            <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-                Features & Atmosphere Tags
-              </label>
-              <div className="flex flex-wrap gap-2">
-                {availableFeatures.map((feat) => {
-                  const isChecked = selectedFeatures.includes(feat);
-                  return (
-                    <button
-                      key={feat}
-                      type="button"
-                      onClick={() => toggleFeature(feat)}
-                      className={`px-3 py-1.5 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition-all ${
-                        isChecked
-                          ? 'bg-brand-500 text-white shadow-sm'
-                          : 'bg-slate-100 text-slate-700 hover:bg-slate-200/80'
-                      }`}
-                    >
-                      {isChecked && <CheckCircle2 className="w-3.5 h-3.5" />}
-                      {feat}
-                    </button>
-                  );
-                })}
-              </div>
-            </div>
           </div>
         </div>
 
-        {/* Initial Menu Builder */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-            <div>
-              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
-                <Utensils className="w-4 h-4 text-brand-500" />
-                4. Menu & Dishes (Optional)
-              </h3>
-              <p className="text-xs text-slate-500">Add popular dishes so customers can review and comment on them.</p>
+        {/* Highlights & Features */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+              <Sparkles className="w-5 h-5" />
             </div>
+            <div>
+              <h2 className="font-bold text-base text-slate-900">4. Highlights & Amenities</h2>
+              <p className="text-xs text-slate-400">Select what makes this restaurant special</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 sm:grid-cols-3 gap-2.5">
+            {availableFeatures.map((feat) => {
+              const isSelected = selectedFeatures.includes(feat);
+              return (
+                <button
+                  key={feat}
+                  type="button"
+                  onClick={() => toggleFeature(feat)}
+                  className={`p-3 rounded-2xl border text-xs font-bold text-left transition-all flex items-center gap-2 ${
+                    isSelected
+                      ? 'bg-brand-50/80 border-brand-300 text-brand-900 shadow-sm'
+                      : 'bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  <CheckCircle2 className={`w-4 h-4 ${isSelected ? 'text-brand-600' : 'text-slate-300'}`} />
+                  <span>{feat}</span>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* Initial Digital Menu Items */}
+        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+                <Utensils className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="font-bold text-base text-slate-900">5. Initial Menu Items</h2>
+                <p className="text-xs text-slate-400">You and other foodies can also add more dishes later</p>
+              </div>
+            </div>
+
             <button
               type="button"
               onClick={handleAddMenuItem}
-              className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
             >
-              <Plus className="w-3.5 h-3.5" /> Add Dish
+              <Plus className="w-3.5 h-3.5 text-brand-600" />
+              <span>Add Dish</span>
             </button>
           </div>
 
-          <div className="space-y-3">
-            {menuItems.map((item, idx) => (
+          <div className="space-y-4">
+            {menuItems.map((item, index) => (
               <div
-                key={idx}
-                className="p-4 rounded-xl border border-slate-200 bg-slate-50/60 space-y-3"
+                key={index}
+                className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 relative"
               >
-                <div className="grid grid-cols-1 sm:grid-cols-12 gap-3">
-                  <div className="sm:col-span-5">
-                    <input
-                      type="text"
-                      placeholder="Dish Name (e.g. Handmade Carbonara)"
-                      value={item.name}
-                      onChange={(e) => handleMenuItemChange(idx, 'name', e.target.value)}
-                      className="w-full text-xs rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <select
-                      value={item.category}
-                      onChange={(e) => handleMenuItemChange(idx, 'category', e.target.value)}
-                      className="w-full text-xs rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    >
-                      <option value="Mains">Mains</option>
-                      <option value="Appetizers">Appetizers</option>
-                      <option value="Desserts">Desserts</option>
-                      <option value="Drinks">Drinks</option>
-                      <option value="Specials">Specials</option>
-                    </select>
-                  </div>
-
-                  <div className="sm:col-span-3">
-                    <input
-                      type="number"
-                      step="0.01"
-                      placeholder="Price $"
-                      value={item.price}
-                      onChange={(e) => handleMenuItemChange(idx, 'price', e.target.value)}
-                      className="w-full text-xs rounded-lg border border-slate-200 bg-white px-3 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                    />
-                  </div>
-
-                  <div className="sm:col-span-1 flex items-center justify-center">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-700">Dish #{index + 1}</span>
+                  {menuItems.length > 1 && (
                     <button
                       type="button"
-                      onClick={() => handleRemoveMenuItem(idx)}
-                      className="text-slate-400 hover:text-rose-500 p-1"
+                      onClick={() => handleRemoveMenuItem(index)}
+                      className="text-rose-500 hover:text-rose-700 p-1"
                     >
                       <Trash2 className="w-4 h-4" />
                     </button>
+                  )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                  <input
+                    type="text"
+                    placeholder="Dish Name (e.g. Truffle Pappardelle)"
+                    value={item.name}
+                    onChange={(e) => handleMenuItemChange(index, 'name', e.target.value)}
+                    className="sm:col-span-2 text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  />
+                  <div className="relative">
+                    <span className="text-slate-400 absolute left-3 top-2 text-xs font-bold">{currencySymbol}</span>
+                    <input
+                      type="number"
+                      step="0.5"
+                      placeholder="Price"
+                      value={item.price}
+                      onChange={(e) => handleMenuItemChange(index, 'price', e.target.value)}
+                      className="w-full pl-7 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
+                    />
                   </div>
                 </div>
 
-                <div className="flex flex-col sm:flex-row items-center gap-3">
-                  <input
-                    type="text"
-                    placeholder="Short description / ingredients (e.g. Guanciale, egg yolk, pecorino romano)"
-                    value={item.description}
-                    onChange={(e) => handleMenuItemChange(idx, 'description', e.target.value)}
-                    className="flex-1 w-full text-xs rounded-lg border border-slate-200 bg-white px-3 py-1.5 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
-                  />
-                  <label className="flex items-center gap-1.5 text-xs text-slate-700 cursor-pointer flex-shrink-0">
-                    <input
-                      type="checkbox"
-                      checked={item.is_signature}
-                      onChange={(e) => handleMenuItemChange(idx, 'is_signature', e.target.checked)}
-                      className="rounded text-brand-500 focus:ring-brand-400"
-                    />
-                    <span className="font-semibold">Signature Dish</span>
-                  </label>
-                </div>
+                <textarea
+                  rows={2}
+                  placeholder="Tasting description and key ingredients..."
+                  value={item.description}
+                  onChange={(e) => handleMenuItemChange(index, 'description', e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-white p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                />
               </div>
             ))}
           </div>
         </div>
 
-        {/* Form Submit */}
-        <div className="flex items-center justify-end gap-3 pt-4">
+        {/* Submit Action */}
+        <div className="pt-4 flex items-center justify-end gap-3">
           <Link
             to="/explore"
-            className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+            className="px-6 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs"
           >
             Cancel
           </Link>
           <button
             type="submit"
             disabled={submitting}
-            className="px-8 py-3 rounded-xl bg-gradient-to-r from-brand-500 to-amber-500 hover:from-brand-600 hover:to-amber-600 disabled:opacity-50 text-white text-sm font-extrabold shadow-lg shadow-brand-500/25 flex items-center gap-2 transition-all hover:scale-105"
+            className="px-8 py-3.5 rounded-2xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-brand-500/25 transition-all hover:scale-105"
           >
-            <Building2 className="w-4 h-4" />
-            <span>{submitting ? 'Creating Restaurant...' : 'Create Restaurant Listing'}</span>
+            {submitting ? 'Publishing Restaurant...' : 'Publish Restaurant Listing'}
           </button>
         </div>
       </form>
     </div>
   );
 };
-

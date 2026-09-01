@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { UtensilsCrossed, Lock, Mail, User, Phone, ArrowRight, Bell, Sparkles } from 'lucide-react';
+import { UtensilsCrossed, Lock, Mail, User, Phone, ArrowRight, Bell, Sparkles, Heart } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import { useCountry } from '../context/CountryContext';
 import { useToast } from '../context/ToastContext';
@@ -13,6 +13,7 @@ export const RegisterPage = () => {
 
   const [fullName, setFullName] = useState('');
   const [username, setUsername] = useState('');
+  const [gender, setGender] = useState('Male'); // 'Male', 'Female', 'Non-binary', 'Prefer not to say'
   const [email, setEmail] = useState('');
   const [phoneDigits, setPhoneDigits] = useState('');
   const [password, setPassword] = useState('');
@@ -56,6 +57,7 @@ export const RegisterPage = () => {
       await register({
         full_name: fullName.trim(),
         username: username.trim(),
+        gender: gender,
         email: cleanEmail,
         country: country.name,
         country_code: country.callingCode,
@@ -123,6 +125,29 @@ export const RegisterPage = () => {
                   onChange={(e) => setUsername(e.target.value)}
                   className="w-full pl-8 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
+              </div>
+            </div>
+
+            {/* Gender Selection */}
+            <div>
+              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                Gender
+              </label>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                {['Male', 'Female', 'Non-binary', 'Prefer not to say'].map((g) => (
+                  <button
+                    key={g}
+                    type="button"
+                    onClick={() => setGender(g)}
+                    className={`py-2 px-1 text-[11px] font-bold rounded-xl border transition-all text-center ${
+                      gender === g
+                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
+                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
               </div>
             </div>
 
