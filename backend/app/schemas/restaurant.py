@@ -25,6 +25,18 @@ class MenuItemUpdate(BaseModel):
 class MenuItemOut(MenuItemBase):
     id: int
     restaurant_id: int
+    user_id: Optional[str] = None
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class MenuItemWithRestaurantOut(MenuItemBase):
+    id: int
+    restaurant_id: int
+    restaurant_name: str
+    restaurant_city: Optional[str] = None
+    user_id: Optional[str] = None
     created_at: datetime
 
     class Config:

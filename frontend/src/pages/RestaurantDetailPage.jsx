@@ -642,16 +642,23 @@ export const RestaurantDetailPage = () => {
                         </div>
 
                         <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
-                          <span className="font-medium">{item.category}</span>
+                          <div className="flex items-center gap-1.5">
+                            <span className="font-medium">{item.category}</span>
+                            {item.user_id === user?.id && (
+                              <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[9px] font-bold">
+                                Your Upload
+                              </span>
+                            )}
+                          </div>
                           
                           <div className="flex items-center gap-1.5">
-                            {isOwner && (
+                            {isAuthenticated && (item.user_id === user?.id || restaurant.owner_id === user?.id || user?.role === 'admin') && (
                               <>
                                 <button
                                   type="button"
                                   onClick={() => handleStartEditDish(item)}
                                   className="p-1 rounded text-slate-500 hover:text-brand-600 hover:bg-slate-100 transition-colors"
-                                  title="Edit food item & photo"
+                                  title={item.user_id === user?.id ? "Edit the dish you uploaded" : "Edit food item & photo"}
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
                                 </button>
@@ -659,7 +666,7 @@ export const RestaurantDetailPage = () => {
                                   type="button"
                                   onClick={() => handleDeleteMenuItem(item.id, item.name)}
                                   className="p-1 rounded text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
-                                  title="Delete food item"
+                                  title={item.user_id === user?.id ? "Delete the dish you uploaded" : "Delete food item"}
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
                                 </button>

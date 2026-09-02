@@ -2,11 +2,12 @@ import React, { useState, useEffect, Suspense, lazy } from 'react';
 import { useSearchParams, Link, useNavigate } from 'react-router-dom';
 import { 
   User, Bookmark, Star, Edit3, Settings, ShieldCheck, 
-  Utensils, Heart, Calendar, CheckCircle2, Building2, Trash2, PlusCircle 
+  Utensils, Heart, Calendar, CheckCircle2, Building2, Trash2, PlusCircle, MessageSquare, Edit2, Image, X, ExternalLink 
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
 import { useToast } from '../context/ToastContext';
+import { useCurrency } from '../context/CurrencyContext';
 import { DatabaseLoader } from '../components/DatabaseLoader';
 
 const ReviewCard = lazy(() =>
@@ -21,11 +22,14 @@ export const ProfilePage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, updateProfile } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
+  const { formatPrice, currencySymbol } = useCurrency();
 
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'reviews');
   const [myReviews, setMyReviews] = useState([]);
   const [savedRestaurants, setSavedRestaurants] = useState([]);
   const [myOwnedRestaurants, setMyOwnedRestaurants] = useState([]);
+  const [myUploadedDishes, setMyUploadedDishes] = useState([]);
+  const [myComments, setMyComments] = useState([]);
   const [loading, setLoading] = useState(true);
 
   // Edit profile form state
@@ -40,20 +44,39 @@ export const ProfilePage = () => {
   const [phoneNumber, setPhoneNumber] = useState(user?.phone_number || '');
   const [acceptsPromotions, setAcceptsPromotions] = useState(user?.accepts_promotions ?? true);
 
+  // Edit Uploaded Dish Modal State
+  const [editDishModalOpen, setEditDishModalOpen] = useState(false);
+  const [editingDish, setEditingDish] = useState(null);
+  const [editDishName, setEditDishName] = useState('');
+  const [editDishCategory, setEditDishCategory] = useState('Mains');
+  const [editDishPrice, setEditDishPrice] = useState('');
+  const [editDishDescription, setEditDishDescription] = useState('');
+  const [editDishImageUrl, setEditDishImageUrl] = useState('');
+  const [editDishIsSignature, setEditDishIsSignature] = useState(false);
+  const [editDishSubmitting, setEditDishSubmitting] = useState(false);
+
+  // Edit Comment State
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentContent, setEditingCommentContent] = useState('');
+  const [savingComment, setSavingComment] = useState(false);
+
   const fetchUserData = async () => {
     if (!user?.id) return;
     setLoading(true);
     try {
-      const [revRes, bookRes, restRes] = await Promise.all([
+      const [revRes, bookRes, restRes, dishRes, comRes] = await Promise.all([
         api.get(`/reviews/user/${user.id}`),
         api.get('/bookmarks'),
         api.get('/restaurants?limit=100'),
+        api.get(`/restaurants/menu/user/${user.id}`),
+        api.get(`/reviews/comments/user/${user.id}`),
       ]);
       setMyReviews(revRes.data);
       setSavedRestaurants(bookRes.data);
-      // Filter owned restaurants
       const owned = restRes.data.filter((r) => r.owner_id === user.id);
       setMyOwnedRestaurants(owned);
+      setMyUploadedDishes(dishRes.data);
+      setMyComments(comRes.data);
     } catch (err) {
       console.error('Failed to load profile data:', err);
     } finally {
@@ -122,6 +145,95 @@ export const ProfilePage = () => {
       fetchUserData();
     } catch (err) {
       showError(err.response?.data?.detail || 'Failed to delete restaurant.');
+    }
+  };
+
+  // Dish actions
+  const handleStartEditDish = (dish) => {
+    setEditingDish(dish);
+    setEditDishName(dish.name);
+    setEditDishCategory(dish.category || 'Mains');
+    setEditDishPrice(dish.price ? String(dish.price) : '');
+    setEditDishDescription(dish.description || '');
+    setEditDishImageUrl(dish.image_url || '');
+    setEditDishIsSignature(dish.is_signature || false);
+    setEditDishModalOpen(true);
+  };
+
+  const handleSaveDishSubmit = async (e) => {
+    e.preventDefault();
+    if (!editDishName.trim() || !editDishPrice) {
+      showError('Please provide a dish name and price.');
+      return;
+    }
+
+    setEditDishSubmitting(true);
+    try {
+      const payload = {
+        name: editDishName.trim(),
+        category: editDishCategory,
+        price: parseFloat(editDishPrice),
+        description: editDishDescription.trim() || null,
+        image_url: editDishImageUrl.trim() || null,
+        is_signature: editDishIsSignature,
+      };
+
+      await api.put(`/restaurants/${editingDish.restaurant_id}/menu/${editingDish.id}`, payload);
+      showSuccess(`"${editDishName}" updated successfully!`);
+      setEditDishModalOpen(false);
+      fetchUserData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to update dish.');
+    } finally {
+      setEditDishSubmitting(false);
+    }
+  };
+
+  const handleDeleteDish = async (restaurantId, dishId, dishName) => {
+    if (!window.confirm(`Are you sure you want to remove "${dishName}" from the menu?`)) {
+      return;
+    }
+
+    try {
+      await api.delete(`/restaurants/${restaurantId}/menu/${dishId}`);
+      showSuccess(`"${dishName}" removed from menu.`);
+      fetchUserData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to remove dish.');
+    }
+  };
+
+  // Comment actions
+  const handleSaveEditComment = async (commentId) => {
+    if (!editingCommentContent.trim()) {
+      showError('Reply content cannot be empty.');
+      return;
+    }
+
+    setSavingComment(true);
+    try {
+      await api.put(`/reviews/comments/${commentId}`, { content: editingCommentContent.trim() });
+      showSuccess('Reply updated successfully!');
+      setEditingCommentId(null);
+      fetchUserData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to update reply.');
+    } finally {
+      setSavingComment(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete this reply?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/reviews/comments/${commentId}`);
+      showSuccess('Reply deleted.');
+      fetchUserData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to delete reply.');
     }
   };
 
@@ -317,9 +429,39 @@ export const ProfilePage = () => {
           }`}
         >
           <Star className="w-4 h-4" />
-          <span>My Written Reviews</span>
+          <span>My Reviews</span>
           <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-bold">
             {myReviews.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => handleTabSwitch('dishes')}
+          className={`pb-3.5 text-sm font-bold border-b-2 transition-all flex items-center gap-2 flex-shrink-0 ${
+            activeTab === 'dishes'
+              ? 'border-brand-500 text-brand-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <Utensils className="w-4 h-4 text-orange-500" />
+          <span>My Contributed Dishes</span>
+          <span className="px-2 py-0.5 rounded-full bg-orange-100 text-orange-800 text-xs font-bold">
+            {myUploadedDishes.length}
+          </span>
+        </button>
+
+        <button
+          onClick={() => handleTabSwitch('replies')}
+          className={`pb-3.5 text-sm font-bold border-b-2 transition-all flex items-center gap-2 flex-shrink-0 ${
+            activeTab === 'replies'
+              ? 'border-brand-500 text-brand-600'
+              : 'border-transparent text-slate-500 hover:text-slate-800'
+          }`}
+        >
+          <MessageSquare className="w-4 h-4 text-blue-500" />
+          <span>My Replies</span>
+          <span className="px-2 py-0.5 rounded-full bg-blue-100 text-blue-800 text-xs font-bold">
+            {myComments.length}
           </span>
         </button>
 
@@ -359,7 +501,7 @@ export const ProfilePage = () => {
       {/* Tab Content */}
       {loading ? (
         <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
-          <DatabaseLoader message="Fetching your profile data..." subtitle="Loading your personalized reviews, restaurants and bookmarks from database" />
+          <DatabaseLoader message="Fetching your profile data..." subtitle="Loading your personalized reviews, contributed dishes, and replies" />
         </div>
       ) : activeTab === 'reviews' ? (
         myReviews.length === 0 ? (
@@ -383,6 +525,204 @@ export const ProfilePage = () => {
                 <ReviewCard key={review.id} review={review} onUpdate={fetchUserData} />
               ))}
             </Suspense>
+          </div>
+        )
+      ) : activeTab === 'dishes' ? (
+        /* My Contributed Dishes Tab */
+        myUploadedDishes.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-4">
+            <Utensils className="w-10 h-10 text-orange-400 mx-auto" />
+            <h3 className="font-bold text-lg text-slate-800">No food items uploaded yet</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              You can upload food dishes and mouthwatering photos to any restaurant's digital menu.
+            </p>
+            <Link
+              to="/explore"
+              className="inline-block px-5 py-2.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md shadow-brand-500/20"
+            >
+              Browse Restaurants & Add Dishes
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-xs font-bold text-slate-600">
+              You have contributed {myUploadedDishes.length} {myUploadedDishes.length === 1 ? 'dish' : 'dishes'} to community menus
+            </p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {myUploadedDishes.map((dish) => (
+                <div
+                  key={dish.id}
+                  className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col justify-between space-y-4"
+                >
+                  {dish.image_url && (
+                    <div className="rounded-xl overflow-hidden h-36 w-full bg-slate-100">
+                      <img src={dish.image_url} alt={dish.name} className="w-full h-full object-cover" />
+                    </div>
+                  )}
+
+                  <div className="space-y-2">
+                    <div className="flex items-start justify-between gap-2">
+                      <h4 className="font-bold text-slate-900 text-base leading-snug">{dish.name}</h4>
+                      <span className="font-extrabold text-brand-600 text-sm">{formatPrice(dish.price)}</span>
+                    </div>
+
+                    <p className="text-xs font-semibold text-slate-500 flex items-center gap-1">
+                      <span>Restaurant:</span>
+                      <Link
+                        to={`/restaurants/${dish.restaurant_id}`}
+                        className="text-brand-600 hover:underline font-bold inline-flex items-center gap-0.5"
+                      >
+                        {dish.restaurant_name}
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    </p>
+
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-md bg-slate-100 text-slate-700 text-[10px] font-bold">
+                        {dish.category}
+                      </span>
+                      {dish.is_signature && (
+                        <span className="px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">
+                          Signature Dish
+                        </span>
+                      )}
+                    </div>
+
+                    {dish.description && (
+                      <p className="text-xs text-slate-600 italic line-clamp-2">"{dish.description}"</p>
+                    )}
+                  </div>
+
+                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                    <button
+                      type="button"
+                      onClick={() => handleStartEditDish(dish)}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1 transition-colors"
+                      title="Edit this dish"
+                    >
+                      <Edit2 className="w-3.5 h-3.5 text-brand-600" />
+                      <span>Edit Dish</span>
+                    </button>
+
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteDish(dish.restaurant_id, dish.id, dish.name)}
+                      className="px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1 transition-colors"
+                      title="Delete this dish"
+                    >
+                      <Trash2 className="w-3.5 h-3.5" />
+                      <span>Delete</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )
+      ) : activeTab === 'replies' ? (
+        /* My Replies & Discussion Comments Tab */
+        myComments.length === 0 ? (
+          <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-4">
+            <MessageSquare className="w-10 h-10 text-blue-400 mx-auto" />
+            <h3 className="font-bold text-lg text-slate-800">No replies written yet</h3>
+            <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              Join discussions and reply to customer tasting reviews on restaurants you know.
+            </p>
+            <Link
+              to="/explore"
+              className="inline-block px-5 py-2.5 rounded-full bg-brand-500 hover:bg-brand-600 text-white text-xs font-bold shadow-md shadow-brand-500/20"
+            >
+              Explore Reviews
+            </Link>
+          </div>
+        ) : (
+          <div className="space-y-4">
+            <p className="text-xs font-bold text-slate-600">
+              You have posted {myComments.length} {myComments.length === 1 ? 'reply' : 'replies'}
+            </p>
+            <div className="space-y-4">
+              {myComments.map((com) => (
+                <div
+                  key={com.id}
+                  className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm space-y-3"
+                >
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-slate-100 text-xs">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <span className="text-slate-500 font-semibold">On Review:</span>
+                      <span className="font-bold text-slate-800">"{com.review_title}"</span>
+                      <span className="text-slate-400">•</span>
+                      <Link
+                        to={`/restaurants/${com.restaurant_id}`}
+                        className="text-brand-600 hover:underline font-bold flex items-center gap-1"
+                      >
+                        {com.restaurant_name}
+                        <ExternalLink className="w-3 h-3" />
+                      </Link>
+                    </div>
+                    <span className="text-[11px] text-slate-400">
+                      {new Date(com.created_at).toLocaleDateString()}
+                    </span>
+                  </div>
+
+                  {editingCommentId === com.id ? (
+                    <div className="space-y-2 pt-1">
+                      <textarea
+                        rows={2}
+                        value={editingCommentContent}
+                        onChange={(e) => setEditingCommentContent(e.target.value)}
+                        className="w-full text-xs rounded-xl border border-slate-300 p-2.5 text-slate-800 focus:ring-2 focus:ring-brand-500"
+                      />
+                      <div className="flex items-center justify-end gap-2">
+                        <button
+                          type="button"
+                          onClick={() => setEditingCommentId(null)}
+                          className="px-3 py-1 rounded-lg border text-xs font-bold text-slate-600 hover:bg-slate-50"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEditComment(com.id)}
+                          disabled={savingComment}
+                          className="px-4 py-1 rounded-lg bg-brand-500 text-white text-xs font-bold shadow-sm"
+                        >
+                          {savingComment ? 'Saving...' : 'Save Update'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="flex items-start justify-between gap-4">
+                      <p className="text-xs text-slate-700 leading-relaxed bg-slate-50 p-3 rounded-xl flex-1">
+                        {com.content}
+                      </p>
+                      <div className="flex items-center gap-1.5 flex-shrink-0">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setEditingCommentId(com.id);
+                            setEditingCommentContent(com.content);
+                          }}
+                          className="p-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-600 text-xs font-bold flex items-center gap-1"
+                          title="Edit your reply"
+                        >
+                          <Edit2 className="w-3 h-3 text-brand-600" />
+                          <span className="hidden sm:inline text-[11px]">Edit</span>
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleDeleteComment(com.id)}
+                          className="p-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1"
+                          title="Delete your reply"
+                        >
+                          <Trash2 className="w-3 h-3" />
+                          <span className="hidden sm:inline text-[11px]">Delete</span>
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
           </div>
         )
       ) : activeTab === 'bookmarks' ? (
@@ -494,6 +834,130 @@ export const ProfilePage = () => {
             </div>
           </div>
         )
+      )}
+
+      {/* Edit Contributed Dish Modal */}
+      {editDishModalOpen && editingDish && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-orange-50 text-orange-600 flex items-center justify-center">
+                  <Utensils className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Edit Contributed Food Item</h3>
+                  <p className="text-[11px] text-slate-500">Update dish info for {editingDish.restaurant_name}</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditDishModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveDishSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editDishName}
+                  onChange={(e) => setEditDishName(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Category</label>
+                  <select
+                    value={editDishCategory}
+                    onChange={(e) => setEditDishCategory(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Mains">Mains</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Drinks">Drinks</option>
+                    <option value="Specials">Specials</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price *</label>
+                  <div className="relative">
+                    <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      required
+                      value={editDishPrice}
+                      onChange={(e) => setEditDishPrice(e.target.value)}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-7 pr-3 py-2.5 text-slate-800 font-bold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Photo URL</label>
+                <div className="relative">
+                  <Image className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <input
+                    type="url"
+                    placeholder="https://images.unsplash.com/..."
+                    value={editDishImageUrl}
+                    onChange={(e) => setEditDishImageUrl(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Ingredients</label>
+                <textarea
+                  rows={2}
+                  value={editDishDescription}
+                  onChange={(e) => setEditDishDescription(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editDishIsSignature}
+                    onChange={(e) => setEditDishIsSignature(e.target.checked)}
+                    className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-slate-700">Mark as House Signature Dish</span>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditDishModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={editDishSubmitting}
+                  className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-brand-500/20"
+                >
+                  {editDishSubmitting ? 'Saving...' : 'Save Changes'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
       )}
     </div>
   );

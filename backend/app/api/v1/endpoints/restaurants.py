@@ -1,7 +1,7 @@
 from typing import List, Optional
 from fastapi import APIRouter, Depends, HTTPException, status, Query
 from sqlalchemy.orm import Session
-from sqlalchemy import func, or_
+from sqlalchemy import func, or_, desc
 
 from app.api.deps import get_db, get_current_user, get_optional_current_user
 from app.models.restaurant import Restaurant, MenuItem
@@ -10,7 +10,8 @@ from app.models.bookmark import Bookmark
 from app.models.user import User
 from app.schemas.restaurant import (
     RestaurantCreate, RestaurantUpdate, RestaurantOut, RestaurantDetailOut, 
-    RestaurantRatingStats, MenuItemCreate, MenuItemUpdate, MenuItemOut
+    RestaurantRatingStats, MenuItemCreate, MenuItemUpdate, MenuItemOut,
+    MenuItemWithRestaurantOut
 )
 
 router = APIRouter()
@@ -290,6 +291,7 @@ def add_menu_item(
 
     menu_item = MenuItem(
         restaurant_id=restaurant.id,
+        user_id=current_user.id,
         name=item_in.name.strip(),
         description=item_in.description,
         category=item_in.category or "Dishes",
@@ -302,7 +304,7 @@ def add_menu_item(
     db.refresh(menu_item)
     return MenuItemOut.model_validate(menu_item)
 
-# Delete Food Items from Restaurant Menu (Owner or Admin)
+# Delete Food Items from Restaurant Menu (Uploader, Owner, or Admin)
 @router.delete("/{restaurant_id}/menu/{menu_item_id}", status_code=status.HTTP_204_NO_CONTENT)
 def delete_menu_item(
     restaurant_id: int,
@@ -321,17 +323,21 @@ def delete_menu_item(
     if not menu_item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found")
 
-    if restaurant.owner_id != current_user.id and current_user.role != "admin":
+    is_uploader = menu_item.user_id == current_user.id
+    is_owner = restaurant.owner_id == current_user.id
+    is_admin = current_user.role == "admin"
+
+    if not (is_uploader or is_owner or is_admin):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Only the restaurant owner can delete items from this menu."
+            detail="Only the user who added this dish or the restaurant owner can delete it."
         )
 
     db.delete(menu_item)
     db.commit()
     return None
 
-# Edit Food Items in Restaurant Menu (Owner or Admin)
+# Edit Food Items in Restaurant Menu (Uploader, Owner, or Admin)
 @router.put("/{restaurant_id}/menu/{menu_item_id}", response_model=MenuItemOut)
 def update_menu_item(
     restaurant_id: int,
@@ -351,10 +357,14 @@ def update_menu_item(
     if not menu_item:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found")
 
-    if restaurant.owner_id != current_user.id and current_user.role != "admin":
+    is_uploader = menu_item.user_id == current_user.id
+    is_owner = restaurant.owner_id == current_user.id
+    is_admin = current_user.role == "admin"
+
+    if not (is_uploader or is_owner or is_admin):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN, 
-            detail="Only the restaurant owner can edit items from this menu."
+            detail="Only the user who added this dish or the restaurant owner can edit it."
         )
 
     for field, val in item_update.model_dump(exclude_unset=True).items():
@@ -364,6 +374,33 @@ def update_menu_item(
     db.commit()
     db.refresh(menu_item)
     return MenuItemOut.model_validate(menu_item)
+
+# Get all dishes/food items uploaded by a specific user (across all restaurants)
+@router.get("/menu/user/{user_id}", response_model=List[MenuItemWithRestaurantOut])
+def get_user_uploaded_dishes(
+    user_id: str,
+    db: Session = Depends(get_db)
+):
+    items = db.query(MenuItem).join(Restaurant).filter(MenuItem.user_id == user_id).order_by(desc(MenuItem.created_at)).all()
+    results = []
+    for item in items:
+        results.append(
+            MenuItemWithRestaurantOut(
+                id=item.id,
+                restaurant_id=item.restaurant_id,
+                restaurant_name=item.restaurant.name if item.restaurant else "Restaurant",
+                restaurant_city=item.restaurant.city if item.restaurant else None,
+                name=item.name,
+                description=item.description,
+                category=item.category,
+                price=item.price,
+                image_url=item.image_url,
+                is_signature=item.is_signature,
+                user_id=item.user_id,
+                created_at=item.created_at
+            )
+        )
+    return results
 
 # Claim Ownership of an Unclaimed Restaurant (Owner Only)
 @router.post("/{restaurant_id}/claim", response_model=RestaurantDetailOut)

@@ -10,7 +10,7 @@ from app.models.user import User
 from app.schemas.review import (
     ReviewCreate, ReviewUpdate, ReviewOut, 
     ReviewCommentCreate, ReviewCommentUpdate, ReviewCommentOut,
-    DishReviewOut
+    ReviewCommentWithContextOut, DishReviewOut
 )
 from app.schemas.user import UserOut
 
@@ -307,4 +307,32 @@ def delete_review_comment(
     db.delete(comment)
     db.commit()
     return None
+
+# Get all comments/replies written by a specific user (across all reviews/restaurants)
+@router.get("/comments/user/{user_id}", response_model=List[ReviewCommentWithContextOut])
+def get_user_comments(
+    user_id: str,
+    db: Session = Depends(get_db)
+):
+    comments = db.query(ReviewComment).join(Review).filter(ReviewComment.user_id == user_id).order_by(desc(ReviewComment.created_at)).all()
+    results = []
+    for c in comments:
+        review_title = c.review.title if c.review else "Review"
+        restaurant_id = c.review.restaurant_id if c.review else 0
+        restaurant_name = c.review.restaurant.name if (c.review and c.review.restaurant) else "Restaurant"
+        results.append(
+            ReviewCommentWithContextOut(
+                id=c.id,
+                review_id=c.review_id,
+                review_title=review_title,
+                restaurant_id=restaurant_id,
+                restaurant_name=restaurant_name,
+                user_id=c.user_id,
+                content=c.content,
+                is_owner_response=c.is_owner_response,
+                created_at=c.created_at
+            )
+        )
+    return results
+
 

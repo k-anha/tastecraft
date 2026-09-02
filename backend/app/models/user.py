@@ -27,5 +27,6 @@ class User(Base):
     reviews = relationship("Review", back_populates="user", cascade="all, delete-orphan")
     bookmarks = relationship("Bookmark", back_populates="user", cascade="all, delete-orphan")
     owned_restaurants = relationship("Restaurant", back_populates="owner")
+    uploaded_dishes = relationship("MenuItem", back_populates="uploader")
     comments = relationship("ReviewComment", back_populates="user", cascade="all, delete-orphan")
     likes = relationship("ReviewLike", back_populates="user", cascade="all, delete-orphan")

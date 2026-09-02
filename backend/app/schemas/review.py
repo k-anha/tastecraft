@@ -45,6 +45,19 @@ class ReviewCommentOut(ReviewCommentBase):
     class Config:
         from_attributes = True
 
+class ReviewCommentWithContextOut(ReviewCommentBase):
+    id: int
+    review_id: int
+    review_title: str
+    restaurant_id: int
+    restaurant_name: str
+    user_id: str
+    is_owner_response: bool
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
 
 # --- Review ---
 class ReviewBase(BaseModel):

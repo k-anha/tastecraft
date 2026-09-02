@@ -36,6 +36,7 @@ class MenuItem(Base):
 
     id = Column(Integer, primary_key=True, index=True)
     restaurant_id = Column(Integer, ForeignKey("restaurants.id"), nullable=False)
+    user_id = Column(String(64), ForeignKey("users.id"), nullable=True)  # User who uploaded this dish
     name = Column(String(255), nullable=False)
     description = Column(Text, nullable=True)
     category = Column(String(100), nullable=False)  # Appetizers, Mains, Desserts, Drinks, Specials
@@ -46,4 +47,5 @@ class MenuItem(Base):
 
     # Relationships
     restaurant = relationship("Restaurant", back_populates="menu_items")
+    uploader = relationship("User", back_populates="uploaded_dishes")
     dish_reviews = relationship("DishReview", back_populates="menu_item")
