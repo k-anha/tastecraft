@@ -37,6 +37,11 @@ export const ReviewCard = ({ review, onUpdate }) => {
   const [savingEdit, setSavingEdit] = useState(false);
   const [deleting, setDeleting] = useState(false);
 
+  // Edit Reply / Comment State
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingCommentContent, setEditingCommentContent] = useState('');
+  const [savingCommentEdit, setSavingCommentEdit] = useState(false);
+
   const isAuthor = isAuthenticated && user?.id === review.user_id;
   const isAdmin = isAuthenticated && user?.role === 'admin';
   const canModify = isAuthor || isAdmin;
@@ -89,6 +94,45 @@ export const ReviewCard = ({ review, onUpdate }) => {
       showError('Failed to post reply.');
     } finally {
       setCommentSubmitting(false);
+    }
+  };
+
+  const handleStartEditComment = (comment) => {
+    setEditingCommentId(comment.id);
+    setEditingCommentContent(comment.content);
+  };
+
+  const handleSaveEditComment = async (commentId) => {
+    if (!editingCommentContent.trim()) {
+      showError('Reply content cannot be empty.');
+      return;
+    }
+
+    setSavingCommentEdit(true);
+    try {
+      const res = await api.put(`/reviews/comments/${commentId}`, { content: editingCommentContent.trim() });
+      setComments(comments.map((c) => (c.id === commentId ? res.data : c)));
+      setEditingCommentId(null);
+      setEditingCommentContent('');
+      showSuccess('Reply updated successfully!');
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to update reply.');
+    } finally {
+      setSavingCommentEdit(false);
+    }
+  };
+
+  const handleDeleteComment = async (commentId) => {
+    if (!window.confirm('Are you sure you want to delete your reply?')) {
+      return;
+    }
+
+    try {
+      await api.delete(`/reviews/comments/${commentId}`);
+      setComments(comments.filter((c) => c.id !== commentId));
+      showSuccess('Reply deleted.');
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to delete reply.');
     }
   };
 
@@ -503,33 +547,96 @@ export const ReviewCard = ({ review, onUpdate }) => {
       {showComments && (
         <div className="mt-4 pt-4 border-t border-slate-100 space-y-3">
           <div className="space-y-2">
-            {comments.map((comment) => (
-              <div
-                key={comment.id}
-                className={`p-3 rounded-xl text-xs space-y-1 ${
-                  comment.is_owner_response
-                    ? 'bg-amber-50/80 border border-amber-200'
-                    : 'bg-slate-50 border border-slate-100'
-                }`}
-              >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-1.5">
-                    {comment.is_owner_response && (
-                      <span className="px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 text-[10px] font-bold flex items-center gap-1">
-                        <ShieldCheck className="w-2.5 h-2.5" /> Official Owner Response
+            {comments.map((comment) => {
+              const isCommentAuthor = isAuthenticated && user?.id === comment.user_id;
+              const isReviewAuthor = isAuthenticated && user?.id === review.user_id;
+              const canModifyComment = isCommentAuthor || isReviewAuthor || isAdmin;
+
+              return (
+                <div
+                  key={comment.id}
+                  className={`p-3.5 rounded-2xl text-xs space-y-2 transition-all ${
+                    comment.is_owner_response
+                      ? 'bg-amber-50/80 border border-amber-200/80'
+                      : 'bg-slate-50 border border-slate-200/60'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-1.5">
+                      {comment.is_owner_response && (
+                        <span className="px-2 py-0.5 rounded-md bg-amber-200 text-amber-900 text-[10px] font-bold flex items-center gap-1">
+                          <ShieldCheck className="w-2.5 h-2.5" /> Official Owner Response
+                        </span>
+                      )}
+                      <span className="font-bold text-slate-900">
+                        {comment.user?.full_name || comment.user?.username || 'User'}
                       </span>
-                    )}
-                    <span className="font-bold text-slate-900">
-                      {comment.user?.full_name || comment.user?.username || 'User'}
-                    </span>
+                    </div>
+
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] text-slate-400">
+                        {new Date(comment.created_at).toLocaleDateString()}
+                      </span>
+
+                      {/* Comment Edit / Delete Actions */}
+                      {canModifyComment && editingCommentId !== comment.id && (
+                        <div className="flex items-center gap-1">
+                          {isCommentAuthor && (
+                            <button
+                              type="button"
+                              onClick={() => handleStartEditComment(comment)}
+                              className="p-1 rounded text-slate-400 hover:text-brand-600 hover:bg-slate-200/60 transition-colors"
+                              title="Edit your reply"
+                            >
+                              <Edit2 className="w-3 h-3" />
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteComment(comment.id)}
+                            className="p-1 rounded text-slate-400 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                            title="Delete reply"
+                          >
+                            <Trash2 className="w-3 h-3" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <span className="text-[10px] text-slate-400">
-                    {new Date(comment.created_at).toLocaleDateString()}
-                  </span>
+
+                  {/* Comment Body or Inline Editor */}
+                  {editingCommentId === comment.id ? (
+                    <div className="space-y-2 pt-1">
+                      <input
+                        type="text"
+                        value={editingCommentContent}
+                        onChange={(e) => setEditingCommentContent(e.target.value)}
+                        className="w-full text-xs rounded-xl border border-slate-300 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                      />
+                      <div className="flex items-center justify-end gap-1.5">
+                        <button
+                          type="button"
+                          onClick={() => setEditingCommentId(null)}
+                          className="px-2.5 py-1 rounded-lg border border-slate-200 text-[11px] font-bold text-slate-600 hover:bg-slate-100"
+                        >
+                          Cancel
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => handleSaveEditComment(comment.id)}
+                          disabled={savingCommentEdit}
+                          className="px-3 py-1 rounded-lg bg-brand-500 hover:bg-brand-600 text-white text-[11px] font-bold shadow-sm"
+                        >
+                          {savingCommentEdit ? 'Saving...' : 'Save'}
+                        </button>
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-slate-700 leading-relaxed pl-1">{comment.content}</p>
+                  )}
                 </div>
-                <p className="text-slate-700 leading-relaxed pl-1">{comment.content}</p>
-              </div>
-            ))}
+              );
+            })}
           </div>
 
           {/* Add Reply Form */}

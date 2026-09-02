@@ -10,7 +10,7 @@ from app.models.bookmark import Bookmark
 from app.models.user import User
 from app.schemas.restaurant import (
     RestaurantCreate, RestaurantUpdate, RestaurantOut, RestaurantDetailOut, 
-    RestaurantRatingStats, MenuItemCreate, MenuItemOut
+    RestaurantRatingStats, MenuItemCreate, MenuItemUpdate, MenuItemOut
 )
 
 router = APIRouter()
@@ -330,6 +330,40 @@ def delete_menu_item(
     db.delete(menu_item)
     db.commit()
     return None
+
+# Edit Food Items in Restaurant Menu (Owner or Admin)
+@router.put("/{restaurant_id}/menu/{menu_item_id}", response_model=MenuItemOut)
+def update_menu_item(
+    restaurant_id: int,
+    menu_item_id: int,
+    item_update: MenuItemUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    restaurant = db.query(Restaurant).filter(Restaurant.id == restaurant_id).first()
+    if not restaurant:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Restaurant not found")
+
+    menu_item = db.query(MenuItem).filter(
+        MenuItem.id == menu_item_id, 
+        MenuItem.restaurant_id == restaurant_id
+    ).first()
+    if not menu_item:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Menu item not found")
+
+    if restaurant.owner_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN, 
+            detail="Only the restaurant owner can edit items from this menu."
+        )
+
+    for field, val in item_update.model_dump(exclude_unset=True).items():
+        if val is not None:
+            setattr(menu_item, field, val)
+
+    db.commit()
+    db.refresh(menu_item)
+    return MenuItemOut.model_validate(menu_item)
 
 # Claim Ownership of an Unclaimed Restaurant (Owner Only)
 @router.post("/{restaurant_id}/claim", response_model=RestaurantDetailOut)

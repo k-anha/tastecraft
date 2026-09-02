@@ -9,7 +9,7 @@ from app.models.review import Review, DishReview, ReviewComment, ReviewLike
 from app.models.user import User
 from app.schemas.review import (
     ReviewCreate, ReviewUpdate, ReviewOut, 
-    ReviewCommentCreate, ReviewCommentOut,
+    ReviewCommentCreate, ReviewCommentUpdate, ReviewCommentOut,
     DishReviewOut
 )
 from app.schemas.user import UserOut
@@ -258,4 +258,53 @@ def add_review_comment(
         is_owner_response=comment.is_owner_response,
         created_at=comment.created_at
     )
+
+@router.put("/comments/{comment_id}", response_model=ReviewCommentOut)
+def update_review_comment(
+    comment_id: int,
+    comment_update: ReviewCommentUpdate,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    comment = db.query(ReviewComment).filter(ReviewComment.id == comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reply not found")
+
+    if comment.user_id != current_user.id and current_user.role != "admin":
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to edit this reply")
+
+    comment.content = comment_update.content.strip()
+    db.commit()
+    db.refresh(comment)
+
+    return ReviewCommentOut(
+        id=comment.id,
+        review_id=comment.review_id,
+        user_id=comment.user_id,
+        user=UserOut.model_validate(comment.user) if comment.user else None,
+        content=comment.content,
+        is_owner_response=comment.is_owner_response,
+        created_at=comment.created_at
+    )
+
+@router.delete("/comments/{comment_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_review_comment(
+    comment_id: int,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user)
+):
+    comment = db.query(ReviewComment).filter(ReviewComment.id == comment_id).first()
+    if not comment:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Reply not found")
+
+    is_comment_author = comment.user_id == current_user.id
+    is_review_author = comment.review and comment.review.user_id == current_user.id
+    is_admin = current_user.role == "admin"
+
+    if not (is_comment_author or is_review_author or is_admin):
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not authorized to delete this reply")
+
+    db.delete(comment)
+    db.commit()
+    return None
 

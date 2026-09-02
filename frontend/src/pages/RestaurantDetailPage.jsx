@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Star, MapPin, Phone, Globe, Clock, Bookmark, Edit3, 
   Utensils, CheckCircle2, ChevronRight, Share2, Sparkles, 
-  DollarSign, HeartHandshake, ShieldCheck, Tag, Trash2, Plus, X, Image, AlertCircle 
+  DollarSign, HeartHandshake, ShieldCheck, Tag, Trash2, Plus, X, Image, AlertCircle, Edit2 
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -43,6 +43,17 @@ export const RestaurantDetailPage = () => {
   const [dishImageUrl, setDishImageUrl] = useState('');
   const [dishIsSignature, setDishIsSignature] = useState(false);
   const [dishSubmitting, setDishSubmitting] = useState(false);
+
+  // Edit Dish Modal State (Owner/Admin)
+  const [editDishModalOpen, setEditDishModalOpen] = useState(false);
+  const [editingDishId, setEditingDishId] = useState(null);
+  const [editDishName, setEditDishName] = useState('');
+  const [editDishCategory, setEditDishCategory] = useState('Mains');
+  const [editDishPrice, setEditDishPrice] = useState('');
+  const [editDishDescription, setEditDishDescription] = useState('');
+  const [editDishImageUrl, setEditDishImageUrl] = useState('');
+  const [editDishIsSignature, setEditDishIsSignature] = useState(false);
+  const [editDishSubmitting, setEditDishSubmitting] = useState(false);
 
   // Deleting State
   const [deletingRestaurant, setDeletingRestaurant] = useState(false);
@@ -129,6 +140,48 @@ export const RestaurantDetailPage = () => {
       showError(err.response?.data?.detail || 'Failed to add dish item.');
     } finally {
       setDishSubmitting(false);
+    }
+  };
+
+  // Open Edit Dish Modal
+  const handleStartEditDish = (item) => {
+    setEditingDishId(item.id);
+    setEditDishName(item.name);
+    setEditDishCategory(item.category || 'Mains');
+    setEditDishPrice(item.price ? String(item.price) : '');
+    setEditDishDescription(item.description || '');
+    setEditDishImageUrl(item.image_url || '');
+    setEditDishIsSignature(item.is_signature || false);
+    setEditDishModalOpen(true);
+  };
+
+  // Save Edited Food Item (Owner / Admin)
+  const handleSaveEditDishSubmit = async (e) => {
+    e.preventDefault();
+    if (!editDishName.trim() || !editDishPrice) {
+      showError('Please provide a dish name and price.');
+      return;
+    }
+
+    setEditDishSubmitting(true);
+    try {
+      const payload = {
+        name: editDishName.trim(),
+        category: editDishCategory,
+        price: parseFloat(editDishPrice),
+        description: editDishDescription.trim() || null,
+        image_url: editDishImageUrl.trim() || null,
+        is_signature: editDishIsSignature,
+      };
+
+      await api.put(`/restaurants/${id}/menu/${editingDishId}`, payload);
+      showSuccess(`"${editDishName}" updated successfully!`);
+      setEditDishModalOpen(false);
+      fetchRestaurantData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to update dish.');
+    } finally {
+      setEditDishSubmitting(false);
     }
   };
 
@@ -504,20 +557,30 @@ export const RestaurantDetailPage = () => {
                         <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
                           <span className="font-medium">{item.category}</span>
                           
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-1.5">
                             {isOwner && (
-                              <button
-                                type="button"
-                                onClick={() => handleDeleteMenuItem(item.id, item.name)}
-                                className="text-rose-500 hover:text-rose-700 p-1"
-                                title="Delete food item"
-                              >
-                                <Trash2 className="w-3.5 h-3.5" />
-                              </button>
+                              <>
+                                <button
+                                  type="button"
+                                  onClick={() => handleStartEditDish(item)}
+                                  className="p-1 rounded text-slate-500 hover:text-brand-600 hover:bg-slate-100 transition-colors"
+                                  title="Edit food item & photo"
+                                >
+                                  <Edit2 className="w-3.5 h-3.5" />
+                                </button>
+                                <button
+                                  type="button"
+                                  onClick={() => handleDeleteMenuItem(item.id, item.name)}
+                                  className="p-1 rounded text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                  title="Delete food item"
+                                >
+                                  <Trash2 className="w-3.5 h-3.5" />
+                                </button>
+                              </>
                             )}
                             <Link
                               to={`/write-review/${restaurant.id}`}
-                              className="text-brand-600 hover:underline font-bold"
+                              className="text-brand-600 hover:underline font-bold ml-1"
                             >
                               Review Dish →
                             </Link>
@@ -741,6 +804,130 @@ export const RestaurantDetailPage = () => {
                   className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-brand-500/20"
                 >
                   {dishSubmitting ? 'Uploading...' : 'Publish Dish'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* Edit Food Item / Dish Modal (Owner / Admin) */}
+      {editDishModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                  <Edit2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Edit Food Item & Photo</h3>
+                  <p className="text-[11px] text-slate-500">Update pricing, description, or image</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditDishModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveEditDishSubmit} className="space-y-4">
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Name *</label>
+                <input
+                  type="text"
+                  required
+                  value={editDishName}
+                  onChange={(e) => setEditDishName(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Category</label>
+                  <select
+                    value={editDishCategory}
+                    onChange={(e) => setEditDishCategory(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  >
+                    <option value="Appetizers">Appetizers</option>
+                    <option value="Mains">Mains</option>
+                    <option value="Desserts">Desserts</option>
+                    <option value="Drinks">Drinks</option>
+                    <option value="Specials">Specials</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price *</label>
+                  <div className="relative">
+                    <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
+                    <input
+                      type="number"
+                      step="0.1"
+                      required
+                      value={editDishPrice}
+                      onChange={(e) => setEditDishPrice(e.target.value)}
+                      className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-7 pr-3 py-2.5 text-slate-800 font-bold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Photo URL</label>
+                <div className="relative">
+                  <Image className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
+                  <input
+                    type="url"
+                    placeholder="https://images.unsplash.com/..."
+                    value={editDishImageUrl}
+                    onChange={(e) => setEditDishImageUrl(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Ingredients</label>
+                <textarea
+                  rows={2}
+                  value={editDishDescription}
+                  onChange={(e) => setEditDishDescription(e.target.value)}
+                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                />
+              </div>
+
+              <div>
+                <label className="flex items-center gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={editDishIsSignature}
+                    onChange={(e) => setEditDishIsSignature(e.target.checked)}
+                    className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer"
+                  />
+                  <span className="text-xs font-bold text-slate-700">Mark as House Signature Dish</span>
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditDishModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={editDishSubmitting}
+                  className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-brand-500/20"
+                >
+                  {editDishSubmitting ? 'Saving...' : 'Save Changes'}
                 </button>
               </div>
             </form>

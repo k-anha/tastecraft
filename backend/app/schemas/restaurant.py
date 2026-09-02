@@ -14,6 +14,14 @@ class MenuItemBase(BaseModel):
 class MenuItemCreate(MenuItemBase):
     pass
 
+class MenuItemUpdate(BaseModel):
+    name: Optional[str] = None
+    description: Optional[str] = None
+    category: Optional[str] = None
+    price: Optional[float] = None
+    image_url: Optional[str] = None
+    is_signature: Optional[bool] = None
+
 class MenuItemOut(MenuItemBase):
     id: int
     restaurant_id: int
@@ -71,7 +79,7 @@ class RestaurantUpdate(BaseModel):
 
 class RestaurantOut(RestaurantBase):
     id: int
-    owner_id: Optional[str] = None  # String ff code
+    owner_id: Optional[str] = None  # String clean hex code
     created_at: datetime
     stats: Optional[RestaurantRatingStats] = None
     is_bookmarked: Optional[bool] = False

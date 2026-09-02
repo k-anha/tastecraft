@@ -24,17 +24,20 @@ class DishReviewOut(DishReviewBase):
         from_attributes = True
 
 
-# --- Review Comment (Discussion / Owner response) ---
+# --- Review Comment (Discussion / Owner response / Reply) ---
 class ReviewCommentBase(BaseModel):
     content: str
 
 class ReviewCommentCreate(ReviewCommentBase):
     pass
 
+class ReviewCommentUpdate(BaseModel):
+    content: str
+
 class ReviewCommentOut(ReviewCommentBase):
     id: int
     review_id: int
-    user_id: str  # ff code
+    user_id: str  # clean hex code
     user: Optional[UserOut] = None
     is_owner_response: bool = False
     created_at: datetime
@@ -73,7 +76,7 @@ class ReviewUpdate(BaseModel):
 class ReviewOut(ReviewBase):
     id: int
     restaurant_id: int
-    user_id: str  # ff code
+    user_id: str  # clean hex code
     user: Optional[UserOut] = None
     likes_count: int = 0
     is_liked_by_user: Optional[bool] = False

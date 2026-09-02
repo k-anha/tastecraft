@@ -99,7 +99,19 @@ def test_api():
     uploaded_dish = dish_res.json()
     print(f"Food lover successfully uploaded dish ID {uploaded_dish['id']}: '{uploaded_dish['name']}' (${uploaded_dish['price']})")
 
-    print("\n6. Testing Create, Edit, and Delete Review...")
+    print("\n6. Testing Edit Dish in Menu (by Owner)...")
+    edit_dish_res = client.put(f"/api/v1/restaurants/{created_restaurant['id']}/menu/{uploaded_dish['id']}", json={
+        "name": "Gorgonzola White Truffle Gnocchi (Chef Special)",
+        "price": 28.0,
+        "description": "Upgraded with fresh Alba white truffles."
+    }, headers=owner_headers)
+    assert edit_dish_res.status_code == 200, edit_dish_res.text
+    updated_dish = edit_dish_res.json()
+    assert updated_dish["name"] == "Gorgonzola White Truffle Gnocchi (Chef Special)"
+    assert updated_dish["price"] == 28.0
+    print(f"Dish ID {uploaded_dish['id']} successfully edited by owner: '{updated_dish['name']}' (${updated_dish['price']})")
+
+    print("\n7. Testing Create, Edit, and Delete Review...")
     # Create review
     rev_res = client.post("/api/v1/reviews", json={
         "restaurant_id": created_restaurant["id"],
@@ -129,22 +141,45 @@ def test_api():
     assert updated_review["food_rating"] == 5.0
     print(f"Review ID {review_obj['id']} successfully updated by author!")
 
+    print("\n8. Testing Add, Edit, and Delete Reply / Comment on Review...")
+    # Add comment
+    comment_res = client.post(f"/api/v1/reviews/{review_obj['id']}/comments", json={
+        "content": "Did you try pairing it with the Pinot Grigio?"
+    }, headers=user_headers)
+    assert comment_res.status_code == 200, comment_res.text
+    created_comment = comment_res.json()
+    print(f"Reply posted with ID {created_comment['id']}: '{created_comment['content']}'")
+
+    # Edit comment
+    edit_comment_res = client.put(f"/api/v1/reviews/comments/{created_comment['id']}", json={
+        "content": "Did you try pairing it with the Pinot Grigio? Highly recommended!"
+    }, headers=user_headers)
+    assert edit_comment_res.status_code == 200, edit_comment_res.text
+    updated_comment = edit_comment_res.json()
+    assert updated_comment["content"] == "Did you try pairing it with the Pinot Grigio? Highly recommended!"
+    print(f"Reply ID {created_comment['id']} successfully edited: '{updated_comment['content']}'")
+
+    # Delete comment
+    del_comment_res = client.delete(f"/api/v1/reviews/comments/{created_comment['id']}", headers=user_headers)
+    assert del_comment_res.status_code == 204
+    print(f"Reply ID {created_comment['id']} successfully deleted!")
+
     # Delete review
     del_rev_res = client.delete(f"/api/v1/reviews/{review_obj['id']}", headers=user_headers)
     assert del_rev_res.status_code == 204
     print(f"Review ID {review_obj['id']} successfully deleted!")
 
-    print("\n7. Testing Delete Menu Item (by Restaurant Owner)...")
+    print("\n9. Testing Delete Menu Item (by Restaurant Owner)...")
     del_dish_res = client.delete(f"/api/v1/restaurants/{created_restaurant['id']}/menu/{uploaded_dish['id']}", headers=owner_headers)
     assert del_dish_res.status_code == 204
     print(f"Menu item ID {uploaded_dish['id']} successfully deleted by owner!")
 
-    print("\n8. Testing Delete Entire Restaurant (by Restaurant Owner)...")
+    print("\n10. Testing Delete Entire Restaurant (by Restaurant Owner)...")
     del_rest_res = client.delete(f"/api/v1/restaurants/{created_restaurant['id']}", headers=owner_headers)
     assert del_rest_res.status_code == 204
     print(f"Restaurant ID {created_restaurant['id']} successfully deleted by owner!")
 
-    print("\nAll End-to-End Tests for Gender, Owner Permissions, Dish Uploads, and Edit/Delete Passed 100%!")
+    print("\nAll End-to-End Tests for Dish Editing, Reply Editing/Deleting, and Permissions Passed 100%!")
 
 if __name__ == "__main__":
     test_api()
