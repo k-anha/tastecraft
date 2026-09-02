@@ -86,6 +86,18 @@ def test_api():
     created_restaurant = owner_rest_res.json()
     print(f"Owner successfully created restaurant ID {created_restaurant['id']}: '{created_restaurant['name']}' (Phone: {created_restaurant['phone_number']})")
 
+    print("\n4b. Testing Edit Restaurant Details (by Owner)...")
+    edit_rest_res = client.put(f"/api/v1/restaurants/{created_restaurant['id']}", json={
+        "name": "Mario's Tuscan Secret & Wine Bar",
+        "description": "Authentic rustic trattoria updated with artisanal Chianti selections and fresh pastas.",
+        "phone_number": "+1 2065559999"
+    }, headers=owner_headers)
+    assert edit_rest_res.status_code == 200, edit_rest_res.text
+    edited_restaurant = edit_rest_res.json()
+    assert edited_restaurant["name"] == "Mario's Tuscan Secret & Wine Bar"
+    assert edited_restaurant["phone_number"] == "+1 2065559999"
+    print(f"Restaurant ID {created_restaurant['id']} successfully edited by owner: '{edited_restaurant['name']}'")
+
     print("\n5. Testing Dish Upload by ANY User (Food Lover)...")
     dish_res = client.post(f"/api/v1/restaurants/{created_restaurant['id']}/menu", json={
         "name": "Gorgonzola Truffle Gnocchi",

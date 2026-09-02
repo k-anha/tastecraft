@@ -3,7 +3,7 @@ import { useParams, Link, useNavigate } from 'react-router-dom';
 import { 
   Star, MapPin, Phone, Globe, Clock, Bookmark, Edit3, 
   Utensils, CheckCircle2, ChevronRight, Share2, Sparkles, 
-  DollarSign, HeartHandshake, ShieldCheck, Tag, Trash2, Plus, X, Image, AlertCircle, Edit2 
+  DollarSign, HeartHandshake, ShieldCheck, Tag, Trash2, Plus, X, Image, AlertCircle, Edit2, Settings 
 } from 'lucide-react';
 import api from '../services/api';
 import { useAuth } from '../context/AuthContext';
@@ -33,6 +33,24 @@ export const RestaurantDetailPage = () => {
   const [selectedMenuCategory, setSelectedMenuCategory] = useState('All');
   const [isBookmarked, setIsBookmarked] = useState(false);
   const [bookmarkLoading, setBookmarkLoading] = useState(false);
+
+  // Edit Restaurant Details Modal State (Owner/Admin)
+  const [editRestaurantModalOpen, setEditRestaurantModalOpen] = useState(false);
+  const [editRestName, setEditRestName] = useState('');
+  const [editRestDesc, setEditRestDesc] = useState('');
+  const [editRestCuisine, setEditRestCuisine] = useState('');
+  const [editRestPriceRange, setEditRestPriceRange] = useState(2);
+  const [editRestAddress, setEditRestAddress] = useState('');
+  const [editRestCity, setEditRestCity] = useState('');
+  const [editRestState, setEditRestState] = useState('');
+  const [editRestZip, setEditRestZip] = useState('');
+  const [editRestPhone, setEditRestPhone] = useState('');
+  const [editRestWebsite, setEditRestWebsite] = useState('');
+  const [editRestHours, setEditRestHours] = useState('');
+  const [editRestImageUrl, setEditRestImageUrl] = useState('');
+  const [editRestCoverImageUrl, setEditRestCoverImageUrl] = useState('');
+  const [editRestFeatures, setEditRestFeatures] = useState('');
+  const [savingRestaurantEdit, setSavingRestaurantEdit] = useState(false);
 
   // Add Dish Modal State (Open to ANY authenticated user)
   const [addDishModalOpen, setAddDishModalOpen] = useState(false);
@@ -100,6 +118,64 @@ export const RestaurantDetailPage = () => {
     if (navigator.clipboard) {
       navigator.clipboard.writeText(window.location.href);
       showSuccess('Restaurant link copied to clipboard!');
+    }
+  };
+
+  // Open Edit Restaurant Modal
+  const handleStartEditRestaurant = () => {
+    if (!restaurant) return;
+    setEditRestName(restaurant.name || '');
+    setEditRestDesc(restaurant.description || '');
+    setEditRestCuisine(restaurant.cuisine_type || 'Italian');
+    setEditRestPriceRange(restaurant.price_range || 2);
+    setEditRestAddress(restaurant.address || '');
+    setEditRestCity(restaurant.city || '');
+    setEditRestState(restaurant.state || '');
+    setEditRestZip(restaurant.zip_code || '');
+    setEditRestPhone(restaurant.phone_number || '');
+    setEditRestWebsite(restaurant.website || '');
+    setEditRestHours(restaurant.opening_hours || '');
+    setEditRestImageUrl(restaurant.image_url || '');
+    setEditRestCoverImageUrl(restaurant.cover_image_url || '');
+    setEditRestFeatures(restaurant.features || '');
+    setEditRestaurantModalOpen(true);
+  };
+
+  // Save Edited Restaurant Details (Owner / Admin)
+  const handleSaveRestaurantSubmit = async (e) => {
+    e.preventDefault();
+    if (!editRestName.trim() || !editRestDesc.trim() || !editRestAddress.trim() || !editRestCity.trim()) {
+      showError('Please provide name, description, address and city.');
+      return;
+    }
+
+    setSavingRestaurantEdit(true);
+    try {
+      const payload = {
+        name: editRestName.trim(),
+        description: editRestDesc.trim(),
+        cuisine_type: editRestCuisine.trim(),
+        price_range: editRestPriceRange,
+        address: editRestAddress.trim(),
+        city: editRestCity.trim(),
+        state: editRestState.trim() || null,
+        zip_code: editRestZip.trim() || null,
+        phone_number: editRestPhone.trim() || null,
+        website: editRestWebsite.trim() || null,
+        opening_hours: editRestHours.trim() || null,
+        image_url: editRestImageUrl.trim() || null,
+        cover_image_url: editRestCoverImageUrl.trim() || null,
+        features: editRestFeatures.trim() || null,
+      };
+
+      await api.put(`/restaurants/${id}`, payload);
+      showSuccess(`"${editRestName}" details updated successfully!`);
+      setEditRestaurantModalOpen(false);
+      fetchRestaurantData();
+    } catch (err) {
+      showError(err.response?.data?.detail || 'Failed to update restaurant details.');
+    } finally {
+      setSavingRestaurantEdit(false);
     }
   };
 
@@ -352,15 +428,26 @@ export const RestaurantDetailPage = () => {
               )}
 
               {isOwner && (
-                <button
-                  onClick={handleDeleteRestaurant}
-                  disabled={deletingRestaurant}
-                  className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all"
-                  title="Delete this restaurant listing"
-                >
-                  <Trash2 className="w-4 h-4" />
-                  <span>{deletingRestaurant ? 'Deleting...' : 'Delete Restaurant'}</span>
-                </button>
+                <>
+                  <button
+                    onClick={handleStartEditRestaurant}
+                    className="px-4 py-2.5 rounded-xl bg-white/20 hover:bg-white/30 border border-white/30 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all backdrop-blur-md"
+                    title="Edit restaurant details, location, phone, and photos"
+                  >
+                    <Edit2 className="w-4 h-4 text-amber-300" />
+                    <span>Edit Restaurant Details</span>
+                  </button>
+
+                  <button
+                    onClick={handleDeleteRestaurant}
+                    disabled={deletingRestaurant}
+                    className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white text-xs sm:text-sm font-bold flex items-center gap-2 shadow-md transition-all"
+                    title="Delete this restaurant listing"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                    <span>{deletingRestaurant ? 'Deleting...' : 'Delete'}</span>
+                  </button>
+                </>
               )}
 
               <button
@@ -601,12 +688,24 @@ export const RestaurantDetailPage = () => {
 
               {/* Owner Info Card */}
               {restaurant.owner_id ? (
-                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center gap-3">
-                  <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0" />
-                  <div className="text-xs">
-                    <p className="font-bold text-slate-900">Verified Restaurant Listing</p>
-                    <p className="text-slate-500">Managed directly by the official restaurant team.</p>
+                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+                    <div className="text-xs">
+                      <p className="font-bold text-slate-900">Verified Restaurant Listing</p>
+                      <p className="text-slate-500">Managed directly by official restaurant owner.</p>
+                    </div>
                   </div>
+                  {isOwner && (
+                    <button
+                      type="button"
+                      onClick={handleStartEditRestaurant}
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1 shadow-sm flex-shrink-0"
+                    >
+                      <Edit2 className="w-3 h-3 text-brand-600" />
+                      <span>Edit Info</span>
+                    </button>
+                  )}
                 </div>
               ) : (
                 <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-3">
@@ -683,6 +782,189 @@ export const RestaurantDetailPage = () => {
           </div>
         )}
       </main>
+
+      {/* Edit Restaurant Details Modal (Owner / Admin) */}
+      {editRestaurantModalOpen && (
+        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl border border-slate-200 max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center gap-2.5">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                  <Edit2 className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-slate-900 text-base">Edit Restaurant Details</h3>
+                  <p className="text-[11px] text-slate-500">Update restaurant information, address, contact, and photos</p>
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setEditRestaurantModalOpen(false)}
+                className="text-slate-400 hover:text-slate-600 p-1"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <form onSubmit={handleSaveRestaurantSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Restaurant Name *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editRestName}
+                    onChange={(e) => setEditRestName(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Story *</label>
+                  <textarea
+                    rows={3}
+                    required
+                    value={editRestDesc}
+                    onChange={(e) => setEditRestDesc(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Cuisine Type *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editRestCuisine}
+                    onChange={(e) => setEditRestCuisine(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-semibold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price Range Tier</label>
+                  <div className="grid grid-cols-4 gap-2">
+                    {[1, 2, 3, 4].map((tier) => (
+                      <button
+                        key={tier}
+                        type="button"
+                        onClick={() => setEditRestPriceRange(tier)}
+                        className={`py-2 rounded-xl text-xs font-bold transition-all border ${
+                          editRestPriceRange === tier
+                            ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
+                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        }`}
+                      >
+                        {getPriceTier(tier)}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Street Address *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editRestAddress}
+                    onChange={(e) => setEditRestAddress(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">City *</label>
+                  <input
+                    type="text"
+                    required
+                    value={editRestCity}
+                    onChange={(e) => setEditRestCity(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">State / Region</label>
+                  <input
+                    type="text"
+                    value={editRestState}
+                    onChange={(e) => setEditRestState(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Phone Number</label>
+                  <input
+                    type="text"
+                    value={editRestPhone}
+                    onChange={(e) => setEditRestPhone(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-medium"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Operating Hours</label>
+                  <input
+                    type="text"
+                    value={editRestHours}
+                    onChange={(e) => setEditRestHours(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Primary Image URL</label>
+                  <input
+                    type="url"
+                    value={editRestImageUrl}
+                    onChange={(e) => setEditRestImageUrl(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Cover Banner Image URL</label>
+                  <input
+                    type="url"
+                    value={editRestCoverImageUrl}
+                    onChange={(e) => setEditRestCoverImageUrl(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+
+                <div className="sm:col-span-2">
+                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Features & Amenities (comma separated)</label>
+                  <input
+                    type="text"
+                    placeholder="e.g. Outdoor Seating, Free WiFi, Vegan Options, Valet Parking"
+                    value={editRestFeatures}
+                    onChange={(e) => setEditRestFeatures(e.target.value)}
+                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  />
+                </div>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setEditRestaurantModalOpen(false)}
+                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={savingRestaurantEdit}
+                  className="px-5 py-2 rounded-xl bg-brand-500 hover:bg-brand-600 disabled:opacity-50 text-white text-xs font-bold shadow-md shadow-brand-500/20"
+                >
+                  {savingRestaurantEdit ? 'Saving Updates...' : 'Save Restaurant Details'}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
 
       {/* Add Food Item / Dish Modal (Open to Anyone) */}
       {addDishModalOpen && (

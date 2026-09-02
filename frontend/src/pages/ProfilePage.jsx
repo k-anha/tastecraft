@@ -460,23 +460,34 @@ export const ProfilePage = () => {
                     </span>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+                  <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100">
                     <Link
                       to={`/restaurants/${rest.id}`}
                       className="text-xs font-bold text-brand-600 hover:underline"
                     >
-                      View Digital Menu & Reviews →
+                      View & Manage →
                     </Link>
 
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteRestaurant(rest.id, rest.name)}
-                      className="px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1 transition-colors"
-                      title="Permanently delete restaurant"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                      <span>Delete</span>
-                    </button>
+                    <div className="flex items-center gap-1.5">
+                      <Link
+                        to={`/restaurants/${rest.id}`}
+                        className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-slate-700 text-xs font-bold flex items-center gap-1 transition-colors"
+                        title="Edit restaurant details"
+                      >
+                        <Edit3 className="w-3.5 h-3.5 text-brand-600" />
+                        <span>Edit Details</span>
+                      </Link>
+
+                      <button
+                        type="button"
+                        onClick={() => handleDeleteRestaurant(rest.id, rest.name)}
+                        className="px-3 py-1.5 rounded-lg border border-rose-200 hover:bg-rose-50 text-rose-600 text-xs font-bold flex items-center gap-1 transition-colors"
+                        title="Permanently delete restaurant"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                        <span>Delete</span>
+                      </button>
+                    </div>
                   </div>
                 </div>
               ))}
