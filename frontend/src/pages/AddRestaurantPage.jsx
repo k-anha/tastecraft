@@ -218,13 +218,19 @@ export const AddRestaurantPage = () => {
           </Link>
         </div>
       ) : user?.role !== 'owner' && user?.role !== 'admin' ? (
-        <div className="p-6 rounded-3xl bg-brand-50 border border-brand-200 text-brand-900 space-y-3">
-          <div className="flex items-center gap-2 font-bold text-sm">
-            <ShieldCheck className="w-5 h-5 text-brand-600" />
-            <span>Restaurant Owner Status Required</span>
+        <div className="p-6 rounded-3xl bg-brand-50 border border-brand-200 text-brand-900 space-y-3 shadow-sm">
+          <div className="flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 font-bold text-sm">
+              <ShieldCheck className="w-5 h-5 text-brand-600" />
+              <span>Restaurant Owner Status Required</span>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
+              {user.gender && <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200">{user.gender}</span>}
+              {user.country && <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200">{user.country}</span>}
+            </div>
           </div>
           <p className="text-xs text-brand-800 leading-relaxed">
-            You are currently registered as a <strong>Food Reviewer</strong>. Only verified Restaurant Owners can publish new restaurant profiles.
+            You are currently signed in as <strong>{user?.full_name || user?.username}</strong> (Role: <span className="font-bold">Food Reviewer</span>). Only registered Restaurant Owners can publish new restaurant profiles on TasteCraft.
           </p>
           <button
             type="button"
@@ -237,11 +243,22 @@ export const AddRestaurantPage = () => {
           </button>
         </div>
       ) : (
-        <div className="p-4 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex items-center gap-3">
-          <ShieldCheck className="w-5 h-5 text-emerald-600 flex-shrink-0" />
-          <p className="text-xs font-semibold">
-            Signed in as <strong>{user?.full_name || user?.username}</strong> (Restaurant Owner). This listing will be automatically linked to your owner account.
-          </p>
+        <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+          <div className="flex items-center gap-3">
+            <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+            <div className="space-y-0.5">
+              <p className="text-xs font-bold text-emerald-950">
+                Verified Restaurant Owner Account: {user?.full_name || user?.username}
+              </p>
+              <p className="text-[11px] text-emerald-800">
+                This restaurant listing and its digital menu will be linked to your owner profile.
+              </p>
+            </div>
+          </div>
+          <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 flex-shrink-0">
+            {user?.gender && <span className="px-2 py-0.5 rounded-md bg-white/80 border border-emerald-200">{user.gender}</span>}
+            {user?.country && <span className="px-2 py-0.5 rounded-md bg-white/80 border border-emerald-200">{user.country}</span>}
+          </div>
         </div>
       )}
 
