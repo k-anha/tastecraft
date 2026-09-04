@@ -25,23 +25,23 @@ export class ErrorBoundary extends React.Component {
     if (this.state.hasError) {
       return (
         <div className="min-h-[75vh] flex items-center justify-center px-4 py-16">
-          <div className="max-w-lg w-full bg-white rounded-3xl border border-slate-200 p-8 shadow-sm text-center space-y-6">
-            <div className="w-16 h-16 rounded-2xl bg-rose-50 border border-rose-100 flex items-center justify-center text-rose-600 mx-auto shadow-sm">
+          <div className="max-w-lg w-full bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm text-center space-y-6">
+            <div className="w-16 h-16 rounded-2xl bg-rose-50 dark:bg-rose-950/40 border border-rose-100 dark:border-rose-900/50 flex items-center justify-center text-rose-600 dark:text-rose-400 mx-auto shadow-sm">
               <AlertTriangle className="w-8 h-8" />
             </div>
 
             <div className="space-y-2">
-              <h1 className="text-2xl font-bold text-slate-900 font-serif-brand">
+              <h1 className="text-2xl font-bold text-slate-900 dark:text-slate-100 font-serif-brand">
                 Oops! Something went wrong
               </h1>
-              <p className="text-sm text-slate-600 leading-relaxed">
+              <p className="text-sm text-slate-600 dark:text-slate-400 leading-relaxed">
                 An unexpected interface error occurred. Don't worry, your data and preferences are safe.
               </p>
             </div>
 
             {this.state.error && (
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-200 text-left overflow-x-auto">
-                <p className="text-xs font-mono text-slate-700 font-medium">
+              <div className="p-3.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-left overflow-x-auto">
+                <p className="text-xs font-mono text-slate-700 dark:text-slate-300 font-medium">
                   {this.state.error.message || String(this.state.error)}
                 </p>
               </div>
@@ -51,7 +51,7 @@ export class ErrorBoundary extends React.Component {
               <button
                 type="button"
                 onClick={() => window.location.reload()}
-                className="w-full py-2.5 px-4 rounded-xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm"
+                className="w-full py-2.5 px-4 rounded-xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-sm"
               >
                 <RotateCcw className="w-4 h-4 text-slate-500" />
                 <span>Reload Page</span>
@@ -67,7 +67,7 @@ export class ErrorBoundary extends React.Component {
               </button>
             </div>
 
-            <div className="pt-2 border-t border-slate-100 flex items-center justify-center gap-2 text-xs text-slate-400">
+            <div className="pt-2 border-t border-slate-100 dark:border-slate-800 flex items-center justify-center gap-2 text-xs text-slate-400 dark:text-slate-500">
               <UtensilsCrossed className="w-3.5 h-3.5 text-brand-500" />
               <span>TasteCraft Restaurant Platform</span>
             </div>
@@ -79,4 +79,3 @@ export class ErrorBoundary extends React.Component {
     return this.props.children;
   }
 }
-

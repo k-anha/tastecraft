@@ -100,12 +100,12 @@ export const ExplorePage = () => {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
       {/* Header & Search */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-6 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <h1 className="font-serif-brand text-3xl font-bold text-slate-900">
+          <h1 className="font-serif-brand text-3xl font-bold text-slate-900 dark:text-slate-100">
             Explore Restaurants
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
+          <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
             Discover and compare dining destinations with verified multi-criteria ratings.
           </p>
         </div>
@@ -113,31 +113,31 @@ export const ExplorePage = () => {
         {/* Search Bar & Sort Dropdown */}
         <div className="flex flex-col sm:flex-row items-center gap-3">
           <div className="relative w-full sm:w-72">
-            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+            <Search className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
             <input
               type="text"
               placeholder="Filter by name or keywords..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full pl-10 pr-4 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
             />
           </div>
 
           <div className="flex items-center gap-2 w-full sm:w-auto justify-between">
             <button
               onClick={() => setMobileFilterOpen(!mobileFilterOpen)}
-              className="md:hidden px-3 py-2 rounded-xl bg-white border border-slate-200 text-xs font-semibold text-slate-700 flex items-center gap-1.5"
+              className="md:hidden px-3 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-xs font-semibold text-slate-700 dark:text-slate-200 flex items-center gap-1.5"
             >
               <SlidersHorizontal className="w-3.5 h-3.5" />
               Filters
             </button>
 
             <div className="flex items-center gap-2">
-              <span className="text-xs font-semibold text-slate-500 hidden sm:inline">Sort:</span>
+              <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 hidden sm:inline">Sort:</span>
               <select
                 value={sortBy}
                 onChange={(e) => setSortBy(e.target.value)}
-                className="text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2 text-slate-800 dark:text-slate-200 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 <option value="highest_rated">Highest Rated (Overall)</option>
                 <option value="most_reviewed">Most Reviewed</option>
@@ -153,40 +153,40 @@ export const ExplorePage = () => {
       {/* Active Filter Chips */}
       {hasActiveFilters && (
         <div className="flex flex-wrap items-center gap-2 pt-1">
-          <span className="text-xs font-bold text-slate-400">Active Filters:</span>
+          <span className="text-xs font-bold text-slate-400 dark:text-slate-500">Active Filters:</span>
           {search && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 text-xs font-semibold text-slate-700">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-slate-100 dark:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-300">
               "{search}"
               <button onClick={() => setSearch('')}><X className="w-3 h-3 hover:text-rose-500" /></button>
             </span>
           )}
           {selectedCuisine !== 'all' && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-100 text-xs font-semibold text-brand-900">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-brand-100 dark:bg-brand-950/60 text-brand-900 dark:text-brand-300 border border-transparent dark:border-brand-800/40 text-xs font-semibold">
               Cuisine: {selectedCuisine}
               <button onClick={() => setSelectedCuisine('all')}><X className="w-3 h-3 hover:text-rose-500" /></button>
             </span>
           )}
           {selectedPrice && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 text-xs font-semibold text-emerald-900">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-300 border border-transparent dark:border-emerald-800/40 text-xs font-semibold">
               Price: {'$'.repeat(selectedPrice)}
               <button onClick={() => setSelectedPrice(null)}><X className="w-3 h-3 hover:text-rose-500" /></button>
             </span>
           )}
           {selectedRating > 0 && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 text-xs font-semibold text-amber-900">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-transparent dark:border-amber-800/40 text-xs font-semibold">
               Score: {selectedRating}+
               <button onClick={() => setSelectedRating(0)}><X className="w-3 h-3 hover:text-rose-500" /></button>
             </span>
           )}
           {selectedCity !== 'all' && (
-            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 text-xs font-semibold text-blue-900">
+            <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-blue-100 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border border-transparent dark:border-blue-800/40 text-xs font-semibold">
               City: {selectedCity}
               <button onClick={() => setSelectedCity('all')}><X className="w-3 h-3 hover:text-rose-500" /></button>
             </span>
           )}
           <button
             onClick={handleResetFilters}
-            className="text-xs text-brand-600 hover:text-brand-700 font-bold ml-2 underline"
+            className="text-xs text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 font-bold ml-2 underline"
           >
             Clear All
           </button>
@@ -197,7 +197,7 @@ export const ExplorePage = () => {
       <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
         {/* Desktop Filter Sidebar */}
         <div className="hidden md:block md:col-span-1">
-          <Suspense fallback={<div className="h-96 bg-slate-100 rounded-2xl animate-pulse" />}>
+          <Suspense fallback={<div className="h-96 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />}>
             <FilterSidebar
               cuisines={cuisines}
               cities={cities}
@@ -217,7 +217,7 @@ export const ExplorePage = () => {
         {/* Mobile Filter Drawer */}
         {mobileFilterOpen && (
           <div className="md:hidden col-span-1">
-            <Suspense fallback={<div className="h-96 bg-slate-100 rounded-2xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-96 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />}>
               <FilterSidebar
                 cuisines={cuisines}
                 cities={cities}
@@ -238,22 +238,22 @@ export const ExplorePage = () => {
         {/* Restaurant Grid */}
         <div className="md:col-span-3 space-y-6">
           <div className="flex items-center justify-between">
-            <p className="text-xs font-bold text-slate-500">
+            <p className="text-xs font-bold text-slate-500 dark:text-slate-400">
               Showing {restaurants.length} {restaurants.length === 1 ? 'restaurant' : 'restaurants'}
             </p>
           </div>
 
           {loading ? (
-            <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
               <DatabaseLoader message="Searching restaurants in database..." subtitle="Filtering dining spots, ratings, and price tiers" />
             </div>
           ) : restaurants.length === 0 ? (
-            <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-4">
-              <div className="w-14 h-14 rounded-2xl bg-brand-50 text-brand-500 flex items-center justify-center mx-auto">
+            <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center space-y-4">
+              <div className="w-14 h-14 rounded-2xl bg-brand-50 dark:bg-brand-950/50 text-brand-500 dark:text-brand-400 flex items-center justify-center mx-auto">
                 <UtensilsCrossed className="w-7 h-7" />
               </div>
-              <h3 className="font-bold text-lg text-slate-800">No restaurants match your filters</h3>
-              <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <h3 className="font-bold text-lg text-slate-800 dark:text-slate-100">No restaurants match your filters</h3>
+              <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                 Try adjusting your search criteria or clear the filters to see all available dining spots.
               </p>
               <button
@@ -265,7 +265,7 @@ export const ExplorePage = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"><div className="h-80 bg-slate-100 rounded-2xl animate-pulse" /></div>}>
+              <Suspense fallback={<div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"><div className="h-80 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" /></div>}>
                 {restaurants.map((restaurant) => (
                   <RestaurantCard
                     key={restaurant.id}

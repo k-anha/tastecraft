@@ -31,6 +31,20 @@
   background: #94a3b8;
 }
 
+/* Dark theme scrollbar */
+.dark ::-webkit-scrollbar-track {
+  background: #090d16;
+}
+
+.dark ::-webkit-scrollbar-thumb {
+  background: #1e293b;
+  border-radius: 4px;
+}
+
+.dark ::-webkit-scrollbar-thumb:hover {
+  background: #334155;
+}
+
 .glass-morphism {
   background: rgba(255, 255, 255, 0.85);
   backdrop-filter: blur(12px);
@@ -42,4 +56,3 @@
   backdrop-filter: blur(12px);
   -webkit-backdrop-filter: blur(12px);
 }
-

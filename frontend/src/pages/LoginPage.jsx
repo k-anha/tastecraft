@@ -75,25 +75,25 @@ export const LoginPage = () => {
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-500 flex items-center justify-center text-white shadow-md">
               <UtensilsCrossed className="w-5 h-5" />
             </div>
-            <span className="font-serif-brand font-extrabold text-2xl text-slate-900">
+            <span className="font-serif-brand font-extrabold text-2xl text-slate-900 dark:text-slate-100">
               TasteCraft
             </span>
           </Link>
-          <h2 className="text-xl font-bold text-slate-900">Welcome Back</h2>
-          <p className="text-xs text-slate-500">Choose your preferred login mode to access TasteCraft</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Welcome Back</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Choose your preferred login mode to access TasteCraft</p>
         </div>
 
         {/* Login Card */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-6">
           {/* Mode Selector Tabs */}
-          <div className="grid grid-cols-2 p-1 bg-slate-100/80 rounded-2xl gap-1">
+          <div className="grid grid-cols-2 p-1 bg-slate-100/80 dark:bg-slate-800 rounded-2xl gap-1">
             <button
               type="button"
               onClick={() => setLoginMode('email_or_username')}
               className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 loginMode === 'email_or_username'
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <Mail className="w-3.5 h-3.5" />
@@ -105,8 +105,8 @@ export const LoginPage = () => {
               onClick={() => setLoginMode('mobile')}
               className={`py-2.5 px-3 rounded-xl text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
                 loginMode === 'mobile'
-                  ? 'bg-white text-slate-900 shadow-sm border border-slate-200/50'
-                  : 'text-slate-500 hover:text-slate-800'
+                  ? 'bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 shadow-sm border border-slate-200/50 dark:border-slate-700'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
               }`}
             >
               <Phone className="w-3.5 h-3.5 text-brand-500" />
@@ -118,18 +118,18 @@ export const LoginPage = () => {
             {/* Mode 1: Email or Username */}
             {loginMode === 'email_or_username' ? (
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   Email or Username
                 </label>
                 <div className="relative">
-                  <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                  <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
                   <input
                     type="text"
                     required
                     placeholder="Username or email address"
                     value={emailOrUsername}
                     onChange={(e) => setEmailOrUsername(e.target.value)}
-                    className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
@@ -137,9 +137,9 @@ export const LoginPage = () => {
               /* Mode 2: Login using Mobile Number */
               <div className="space-y-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
                     <span>Mobile Number</span>
-                    <span className="text-[10px] text-slate-400 font-normal">
+                    <span className="text-[10px] text-slate-400 dark:text-slate-500 font-normal">
                       {activeMobileCountry.name} ({minDigits === maxDigits ? `${maxDigits} digits` : `${minDigits}-${maxDigits} digits`})
                     </span>
                   </label>
@@ -151,7 +151,7 @@ export const LoginPage = () => {
                         setSelectedCountryCode(e.target.value);
                         setMobileNumber('');
                       }}
-                      className="w-32 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 px-2 py-2.5 text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                      className="w-32 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2 py-2.5 text-slate-700 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                     >
                       {countries.map((c) => (
                         <option key={c.code} value={c.code}>
@@ -171,11 +171,11 @@ export const LoginPage = () => {
                         placeholder={activeMobileCountry.phonePlaceholder || `${maxDigits} digits`}
                         value={mobileNumber}
                         onChange={handleMobileNumberChange}
-                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                        className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                       />
                     </div>
                   </div>
-                  <p className="text-[10px] text-slate-400 mt-1">
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                     Digits without spaces. Length: {mobileNumber.length}/{maxDigits}
                   </p>
                 </div>
@@ -184,18 +184,18 @@ export const LoginPage = () => {
 
             {/* Password */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type="password"
                   required
                   placeholder="Password"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
@@ -210,9 +210,9 @@ export const LoginPage = () => {
             </button>
           </form>
 
-          <div className="text-center text-xs text-slate-500 pt-2 border-t border-slate-100">
+          <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
             Don't have an account?{' '}
-            <Link to="/register" className="font-bold text-brand-600 hover:underline">
+            <Link to="/register" className="font-bold text-brand-600 dark:text-brand-400 hover:underline">
               Create one now
             </Link>
           </div>

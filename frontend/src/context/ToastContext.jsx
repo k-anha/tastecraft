@@ -56,21 +56,21 @@ export const ToastProvider = ({ children }) => {
             key={toast.id}
             className={`pointer-events-auto flex items-start justify-between gap-3 p-4 rounded-2xl shadow-xl border backdrop-blur-md transition-all duration-300 ${
               toast.type === 'success'
-                ? 'bg-emerald-50/95 border-emerald-200 text-emerald-900 shadow-emerald-500/10'
+                ? 'bg-emerald-50/95 dark:bg-emerald-950/90 border-emerald-200 dark:border-emerald-800 text-emerald-900 dark:text-emerald-100 shadow-emerald-500/10'
                 : toast.type === 'error'
-                ? 'bg-rose-50/95 border-rose-200 text-rose-900 shadow-rose-500/10'
-                : 'bg-slate-900/95 border-slate-700 text-white shadow-slate-900/20'
+                ? 'bg-rose-50/95 dark:bg-rose-950/90 border-rose-200 dark:border-rose-800 text-rose-900 dark:text-rose-100 shadow-rose-500/10'
+                : 'bg-slate-900/95 dark:bg-slate-800/95 border-slate-700 dark:border-slate-600 text-white shadow-slate-900/20'
             }`}
           >
             <div className="flex items-start gap-3">
-              {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 flex-shrink-0 mt-0.5" />}
-              {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 flex-shrink-0 mt-0.5" />}
+              {toast.type === 'success' && <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />}
+              {toast.type === 'error' && <AlertCircle className="w-5 h-5 text-rose-600 dark:text-rose-400 flex-shrink-0 mt-0.5" />}
               {toast.type === 'info' && <Info className="w-5 h-5 text-brand-400 flex-shrink-0 mt-0.5" />}
               <p className="text-xs sm:text-sm font-medium leading-snug break-words">{toast.message}</p>
             </div>
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-slate-400 hover:text-slate-600 transition-colors p-1 rounded-md ml-2 flex-shrink-0"
+              className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 transition-colors p-1 rounded-md ml-2 flex-shrink-0"
               aria-label="Close notification"
             >
               <X className="w-4 h-4" />

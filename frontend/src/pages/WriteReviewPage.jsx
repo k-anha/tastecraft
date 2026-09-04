@@ -157,7 +157,7 @@ export const WriteReviewPage = () => {
   if (loading) {
     return (
       <div className="max-w-3xl mx-auto px-4 py-12">
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
           <DatabaseLoader message="Fetching restaurant details from database..." subtitle="Loading dining spots and menus for review creation" />
         </div>
       </div>
@@ -169,7 +169,7 @@ export const WriteReviewPage = () => {
       {/* Back Button */}
       <Link
         to={restaurant ? `/restaurants/${restaurant.id}` : '/explore'}
-        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 hover:text-slate-900 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to {restaurant?.name || 'Explore'}</span>
@@ -177,10 +177,10 @@ export const WriteReviewPage = () => {
 
       {/* Header */}
       <div className="space-y-1">
-        <h1 className="font-serif-brand text-3xl font-bold text-slate-900">
+        <h1 className="font-serif-brand text-3xl font-bold text-slate-900 dark:text-slate-100">
           Write a Multi-Criteria Review
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400">
           Share your candid evaluation across food quality, price, service, ambiance, and specific dishes.
         </p>
       </div>
@@ -188,14 +188,14 @@ export const WriteReviewPage = () => {
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Restaurant Picker if not from detail page */}
         {!restaurantId && (
-          <div className="bg-white rounded-2xl border border-slate-200 p-5 shadow-sm space-y-2">
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-5 shadow-sm space-y-2">
+            <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
               Select Restaurant
             </label>
             <select
               value={selectedRestaurantId}
               onChange={handleRestaurantSelectChange}
-              className="w-full text-sm rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 font-semibold text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+              className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
             >
               {allRestaurants.map((r) => (
                 <option key={r.id} value={r.id}>
@@ -207,23 +207,23 @@ export const WriteReviewPage = () => {
         )}
 
         {/* Multi-Criteria Ratings Card */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-6">
-          <div className="border-b border-slate-100 pb-4">
-            <h3 className="font-bold text-slate-900 text-base">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-6">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-4">
+            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
               1. Evaluate the 4 Core Dimensions
             </h3>
-            <p className="text-xs text-slate-500">Click to set 1-5 stars for each category.</p>
+            <p className="text-xs text-slate-500 dark:text-slate-400">Click to set 1-5 stars for each category.</p>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
             {/* Food Quality */}
-            <div className="p-4 rounded-xl bg-orange-50/60 border border-orange-100 space-y-2">
+            <div className="p-4 rounded-xl bg-orange-50/60 dark:bg-orange-950/30 border border-orange-100 dark:border-orange-900/40 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-orange-800 flex items-center gap-1.5 uppercase tracking-wide">
-                  <Utensils className="w-4 h-4 text-orange-600" />
+                <span className="text-xs font-bold text-orange-800 dark:text-orange-300 flex items-center gap-1.5 uppercase tracking-wide">
+                  <Utensils className="w-4 h-4 text-orange-600 dark:text-orange-400" />
                   Food Quality
                 </span>
-                <span className="text-sm font-extrabold text-orange-950">{foodRating.toFixed(1)} / 5</span>
+                <span className="text-sm font-extrabold text-orange-950 dark:text-orange-200">{foodRating.toFixed(1)} / 5</span>
               </div>
               <RatingStars
                 rating={foodRating}
@@ -231,17 +231,17 @@ export const WriteReviewPage = () => {
                 onChange={(val) => updateCriteriaRating('food', val)}
                 size="lg"
               />
-              <p className="text-[11px] text-slate-500">Taste, freshness, seasoning, and temperature.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Taste, freshness, seasoning, and temperature.</p>
             </div>
 
             {/* Value & Price */}
-            <div className="p-4 rounded-xl bg-emerald-50/60 border border-emerald-100 space-y-2">
+            <div className="p-4 rounded-xl bg-emerald-50/60 dark:bg-emerald-950/30 border border-emerald-100 dark:border-emerald-900/40 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-emerald-800 flex items-center gap-1.5 uppercase tracking-wide">
-                  <DollarSign className="w-4 h-4 text-emerald-600" />
+                <span className="text-xs font-bold text-emerald-800 dark:text-emerald-300 flex items-center gap-1.5 uppercase tracking-wide">
+                  <DollarSign className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
                   Value & Price
                 </span>
-                <span className="text-sm font-extrabold text-emerald-950">{priceRating.toFixed(1)} / 5</span>
+                <span className="text-sm font-extrabold text-emerald-950 dark:text-emerald-200">{priceRating.toFixed(1)} / 5</span>
               </div>
               <RatingStars
                 rating={priceRating}
@@ -249,17 +249,17 @@ export const WriteReviewPage = () => {
                 onChange={(val) => updateCriteriaRating('price', val)}
                 size="lg"
               />
-              <p className="text-[11px] text-slate-500">Portion size and quality compared to menu cost.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Portion size and quality compared to menu cost.</p>
             </div>
 
             {/* Service */}
-            <div className="p-4 rounded-xl bg-blue-50/60 border border-blue-100 space-y-2">
+            <div className="p-4 rounded-xl bg-blue-50/60 dark:bg-blue-950/30 border border-blue-100 dark:border-blue-900/40 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-blue-800 flex items-center gap-1.5 uppercase tracking-wide">
-                  <HeartHandshake className="w-4 h-4 text-blue-600" />
+                <span className="text-xs font-bold text-blue-800 dark:text-blue-300 flex items-center gap-1.5 uppercase tracking-wide">
+                  <HeartHandshake className="w-4 h-4 text-blue-600 dark:text-blue-400" />
                   Service Quality
                 </span>
-                <span className="text-sm font-extrabold text-blue-950">{serviceRating.toFixed(1)} / 5</span>
+                <span className="text-sm font-extrabold text-blue-950 dark:text-blue-200">{serviceRating.toFixed(1)} / 5</span>
               </div>
               <RatingStars
                 rating={serviceRating}
@@ -267,17 +267,17 @@ export const WriteReviewPage = () => {
                 onChange={(val) => updateCriteriaRating('service', val)}
                 size="lg"
               />
-              <p className="text-[11px] text-slate-500">Attentiveness, warmth, speed, and hospitality.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Attentiveness, warmth, speed, and hospitality.</p>
             </div>
 
             {/* Ambiance */}
-            <div className="p-4 rounded-xl bg-purple-50/60 border border-purple-100 space-y-2">
+            <div className="p-4 rounded-xl bg-purple-50/60 dark:bg-purple-950/30 border border-purple-100 dark:border-purple-900/40 space-y-2">
               <div className="flex items-center justify-between">
-                <span className="text-xs font-bold text-purple-800 flex items-center gap-1.5 uppercase tracking-wide">
-                  <Sparkles className="w-4 h-4 text-purple-600" />
+                <span className="text-xs font-bold text-purple-800 dark:text-purple-300 flex items-center gap-1.5 uppercase tracking-wide">
+                  <Sparkles className="w-4 h-4 text-purple-600 dark:text-purple-400" />
                   Ambiance & Vibe
                 </span>
-                <span className="text-sm font-extrabold text-purple-950">{ambianceRating.toFixed(1)} / 5</span>
+                <span className="text-sm font-extrabold text-purple-950 dark:text-purple-200">{ambianceRating.toFixed(1)} / 5</span>
               </div>
               <RatingStars
                 rating={ambianceRating}
@@ -285,39 +285,39 @@ export const WriteReviewPage = () => {
                 onChange={(val) => updateCriteriaRating('ambiance', val)}
                 size="lg"
               />
-              <p className="text-[11px] text-slate-500">Lighting, noise level, seating, and atmosphere.</p>
+              <p className="text-[11px] text-slate-500 dark:text-slate-400">Lighting, noise level, seating, and atmosphere.</p>
             </div>
           </div>
 
           {/* Overall Score Calculated Badge */}
-          <div className="p-4 rounded-xl bg-amber-50 border border-amber-200/80 flex items-center justify-between">
+          <div className="p-4 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-800/50 flex items-center justify-between">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-xl bg-amber-500 text-white flex items-center justify-center font-extrabold text-lg shadow-sm">
                 <Star className="w-5 h-5 fill-white" />
               </div>
               <div>
-                <span className="text-xs font-bold uppercase tracking-wider text-amber-900">Overall Rating</span>
-                <p className="text-xs text-slate-600">Calculated average of your 4 scores above</p>
+                <span className="text-xs font-bold uppercase tracking-wider text-amber-900 dark:text-amber-200">Overall Rating</span>
+                <p className="text-xs text-slate-600 dark:text-slate-400">Calculated average of your 4 scores above</p>
               </div>
             </div>
             <div className="text-right">
-              <span className="text-2xl font-extrabold text-amber-900">{overallRating.toFixed(1)}</span>
-              <span className="text-xs text-amber-700 font-semibold"> / 5.0</span>
+              <span className="text-2xl font-extrabold text-amber-900 dark:text-amber-200">{overallRating.toFixed(1)}</span>
+              <span className="text-xs text-amber-700 dark:text-amber-400 font-semibold"> / 5.0</span>
             </div>
           </div>
         </div>
 
         {/* Written Review Body */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-5">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-base">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-5">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
               2. Share Your Dining Story
             </h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Review Headline *
               </label>
               <input
@@ -326,12 +326,12 @@ export const WriteReviewPage = () => {
                 placeholder="e.g. Unbelievable Truffle Pasta & Fantastic Wine Pairing!"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full text-sm rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Detailed Review *
               </label>
               <textarea
@@ -340,37 +340,37 @@ export const WriteReviewPage = () => {
                 placeholder="Describe your meal, portion sizes, flavors, seating experience, and staff recommendations..."
                 value={content}
                 onChange={(e) => setContent(e.target.value)}
-                className="w-full text-sm rounded-xl border border-slate-200 bg-slate-50/50 p-3.5 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 p-3.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <Calendar className="w-3.5 h-3.5 text-slate-400" />
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
+                <Calendar className="w-3.5 h-3.5 text-slate-400 dark:text-slate-500" />
                 Date of Visit
               </label>
               <input
                 type="date"
                 value={visitDate}
                 onChange={(e) => setVisitDate(e.target.value)}
-                className="text-xs rounded-xl border border-slate-200 bg-slate-50 px-3 py-2 text-slate-700 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3 py-2 text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
         </div>
 
         {/* Dish-Specific Reviews & Tasting Notes */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <div className="border-b border-slate-100 pb-3">
-            <h3 className="font-bold text-slate-900 text-base">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+          <div className="border-b border-slate-100 dark:border-slate-800 pb-3">
+            <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">
               3. Specific Food & Dish Comments
             </h3>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-slate-500 dark:text-slate-400">
               Did you try particular dishes? Tag them and leave detailed tasting notes for fellow foodies.
             </p>
           </div>
 
-          <Suspense fallback={<div className="p-4 text-xs font-medium text-slate-400 bg-slate-50 rounded-xl animate-pulse">Loading dish comment tools...</div>}>
+          <Suspense fallback={<div className="p-4 text-xs font-medium text-slate-400 dark:text-slate-500 bg-slate-50 dark:bg-slate-800 rounded-xl animate-pulse">Loading dish comment tools...</div>}>
             <DishTagInput
               dishes={dishReviews}
               onChange={setDishReviews}
@@ -380,19 +380,19 @@ export const WriteReviewPage = () => {
         </div>
 
         {/* Food Photos URLs */}
-        <div className="bg-white rounded-2xl border border-slate-200 p-6 shadow-sm space-y-4">
-          <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+        <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-6 shadow-sm space-y-4">
+          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
             <div>
-              <h3 className="font-bold text-slate-900 text-base flex items-center gap-2">
+              <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base flex items-center gap-2">
                 <Image className="w-4 h-4 text-brand-500" />
                 4. Food Photos (Optional)
               </h3>
-              <p className="text-xs text-slate-500">Paste direct image URLs of your food or table.</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400">Paste direct image URLs of your food or table.</p>
             </div>
             <button
               type="button"
               onClick={handleAddImageUrl}
-              className="text-xs font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1"
+              className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 flex items-center gap-1"
             >
               <Plus className="w-3.5 h-3.5" /> Add Photo URL
             </button>
@@ -406,7 +406,7 @@ export const WriteReviewPage = () => {
                   placeholder="https://images.unsplash.com/photo-..."
                   value={url}
                   onChange={(e) => handleImageUrlChange(idx, e.target.value)}
-                  className="flex-1 text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2 text-slate-800 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="flex-1 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
                 {imageUrls.length > 1 && (
                   <button
@@ -426,7 +426,7 @@ export const WriteReviewPage = () => {
         <div className="flex items-center justify-end gap-3 pt-4">
           <Link
             to={restaurant ? `/restaurants/${restaurant.id}` : '/explore'}
-            className="px-5 py-2.5 rounded-xl border border-slate-200 text-xs font-bold text-slate-700 hover:bg-slate-50 transition-colors"
+            className="px-5 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
           >
             Cancel
           </Link>

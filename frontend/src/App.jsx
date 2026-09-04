@@ -1,5 +1,6 @@
 import React, { Suspense, lazy } from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from './context/ThemeContext';
 import { AuthProvider } from './context/AuthContext';
 import { ToastProvider } from './context/ToastContext';
 import { CurrencyProvider } from './context/CurrencyContext';
@@ -40,39 +41,41 @@ const NotFoundPage = lazy(() =>
 
 function App() {
   return (
-    <ToastProvider>
-      <AuthProvider>
-        <CurrencyProvider>
-          <Router>
-            <PageMemoryProvider>
-              <div className="min-h-screen flex flex-col bg-slate-50 text-slate-900">
-                <Navbar />
-                <main className="flex-1 flex flex-col">
-                  <ErrorBoundary>
-                    <Suspense fallback={<LoadingFallback />}>
-                      <Routes>
-                        <Route path="/" element={<HomePage />} />
-                        <Route path="/explore" element={<ExplorePage />} />
-                        <Route path="/restaurants/:id" element={<RestaurantDetailPage />} />
-                        <Route path="/write-review" element={<WriteReviewPage />} />
-                        <Route path="/write-review/:restaurantId" element={<WriteReviewPage />} />
-                        <Route path="/add-restaurant" element={<AddRestaurantPage />} />
-                        <Route path="/profile" element={<ProfilePage />} />
-                        <Route path="/login" element={<LoginPage />} />
-                        <Route path="/register" element={<RegisterPage />} />
-                        {/* 404 & Invalid Route Catch-all */}
-                        <Route path="*" element={<NotFoundPage />} />
-                      </Routes>
-                    </Suspense>
-                  </ErrorBoundary>
-                </main>
-                <Footer />
-              </div>
-            </PageMemoryProvider>
-          </Router>
-        </CurrencyProvider>
-      </AuthProvider>
-    </ToastProvider>
+    <ThemeProvider>
+      <ToastProvider>
+        <AuthProvider>
+          <CurrencyProvider>
+            <Router>
+              <PageMemoryProvider>
+                <div className="min-h-screen flex flex-col bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 transition-colors duration-200">
+                  <Navbar />
+                  <main className="flex-1 flex flex-col">
+                    <ErrorBoundary>
+                      <Suspense fallback={<LoadingFallback />}>
+                        <Routes>
+                          <Route path="/" element={<HomePage />} />
+                          <Route path="/explore" element={<ExplorePage />} />
+                          <Route path="/restaurants/:id" element={<RestaurantDetailPage />} />
+                          <Route path="/write-review" element={<WriteReviewPage />} />
+                          <Route path="/write-review/:restaurantId" element={<WriteReviewPage />} />
+                          <Route path="/add-restaurant" element={<AddRestaurantPage />} />
+                          <Route path="/profile" element={<ProfilePage />} />
+                          <Route path="/login" element={<LoginPage />} />
+                          <Route path="/register" element={<RegisterPage />} />
+                          {/* 404 & Invalid Route Catch-all */}
+                          <Route path="*" element={<NotFoundPage />} />
+                        </Routes>
+                      </Suspense>
+                    </ErrorBoundary>
+                  </main>
+                  <Footer />
+                </div>
+              </PageMemoryProvider>
+            </Router>
+          </CurrencyProvider>
+        </AuthProvider>
+      </ToastProvider>
+    </ThemeProvider>
   );
 }
 

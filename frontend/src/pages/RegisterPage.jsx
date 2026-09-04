@@ -83,54 +83,54 @@ export const RegisterPage = () => {
             <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-brand-600 to-amber-500 flex items-center justify-center text-white shadow-md">
               <UtensilsCrossed className="w-5 h-5" />
             </div>
-            <span className="font-serif-brand font-extrabold text-2xl text-slate-900">
+            <span className="font-serif-brand font-extrabold text-2xl text-slate-900 dark:text-slate-100">
               TasteCraft
             </span>
           </Link>
-          <h2 className="text-xl font-bold text-slate-900">Join TasteCraft</h2>
-          <p className="text-xs text-slate-500">Create an account to start reviewing restaurants & dishes</p>
+          <h2 className="text-xl font-bold text-slate-900 dark:text-slate-100">Join TasteCraft</h2>
+          <p className="text-xs text-slate-500 dark:text-slate-400">Create an account to start reviewing restaurants & dishes</p>
         </div>
 
         {/* Register Card */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm space-y-6">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm space-y-6">
           <form onSubmit={handleRegister} className="space-y-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Full Name
               </label>
               <div className="relative">
-                <User className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                <User className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type="text"
                   required
                   placeholder="Alex Mercer"
                   value={fullName}
                   onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Username
               </label>
               <div className="relative">
-                <span className="text-slate-400 absolute left-3.5 top-2.5 text-xs font-bold pointer-events-none">@</span>
+                <span className="text-slate-400 dark:text-slate-500 absolute left-3.5 top-2.5 text-xs font-bold pointer-events-none">@</span>
                 <input
                   type="text"
                   required
                   placeholder="foodie_alex"
                   value={username}
                   onChange={(e) => setUsername(e.target.value)}
-                  className="w-full pl-8 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full pl-8 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
 
             {/* Gender Selection */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Gender
               </label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
@@ -141,8 +141,8 @@ export const RegisterPage = () => {
                     onClick={() => setGender(g)}
                     className={`py-2 px-1 text-[11px] font-bold rounded-xl border transition-all text-center ${
                       gender === g
-                        ? 'bg-slate-900 text-white border-slate-900 shadow-sm'
-                        : 'bg-slate-50 border-slate-200 text-slate-600 hover:bg-slate-100'
+                        ? 'bg-slate-900 dark:bg-brand-500 text-white border-slate-900 dark:border-brand-500 shadow-sm'
+                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750'
                     }`}
                   >
                     {g}
@@ -152,27 +152,27 @@ export const RegisterPage = () => {
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Email Address
               </label>
               <div className="relative">
-                <Mail className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                <Mail className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type="email"
                   required
                   placeholder="alex@example.com"
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
 
             {/* Phone Number with Auto Country Contact Initial and Length Limit */}
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5 flex items-center justify-between">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5 flex items-center justify-between">
                 <span>Contact Number (Digits without spaces)</span>
-                <span className="text-[10px] text-brand-600 font-normal">
+                <span className="text-[10px] text-brand-600 dark:text-brand-400 font-normal">
                   {country.name} ({minDigits === maxDigits ? `${maxDigits} digits` : `${minDigits}-${maxDigits} digits`})
                 </span>
               </label>
@@ -183,7 +183,7 @@ export const RegisterPage = () => {
                     setCountry(e.target.value);
                     setPhoneDigits('');
                   }}
-                  className="w-32 text-xs font-bold rounded-xl border border-slate-200 bg-slate-50 px-2 py-2.5 text-slate-700 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-32 text-xs font-bold rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-2 py-2.5 text-slate-700 dark:text-slate-200 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 >
                   {countries.map((c) => (
                     <option key={c.code} value={c.code}>
@@ -201,34 +201,34 @@ export const RegisterPage = () => {
                     placeholder={country.phonePlaceholder || `${maxDigits} digits`}
                     value={phoneDigits}
                     onChange={handlePhoneChange}
-                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                    className="w-full px-3.5 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
                   />
                 </div>
               </div>
-              <p className="text-[10px] text-slate-400 mt-1">
+              <p className="text-[10px] text-slate-400 dark:text-slate-500 mt-1">
                 Length: {phoneDigits.length}/{maxDigits} digits
               </p>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Password
               </label>
               <div className="relative">
-                <Lock className="w-4 h-4 text-slate-400 absolute left-3.5 top-3 pointer-events-none" />
+                <Lock className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-3.5 top-3 pointer-events-none" />
                 <input
                   type="password"
                   required
                   placeholder="Minimum 6 characters"
                   value={password}
                   onChange={(e) => setPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 bg-slate-50/50 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full pl-10 pr-4 py-2.5 text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Account Type
               </label>
               <div className="grid grid-cols-2 gap-2">
@@ -238,7 +238,7 @@ export const RegisterPage = () => {
                   className={`py-2 rounded-xl text-xs font-bold transition-all border ${
                     role === 'user'
                       ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                      : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750'
                   }`}
                 >
                   Food Reviewer
@@ -249,7 +249,7 @@ export const RegisterPage = () => {
                   className={`py-2 rounded-xl text-xs font-bold transition-all border ${
                     role === 'owner'
                       ? 'bg-brand-500 text-white border-brand-500 shadow-sm'
-                      : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                      : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-750'
                   }`}
                 >
                   Restaurant Owner
@@ -264,10 +264,10 @@ export const RegisterPage = () => {
                   type="checkbox"
                   checked={acceptsPromotions}
                   onChange={(e) => setAcceptsPromotions(e.target.checked)}
-                  className="mt-0.5 w-4 h-4 text-brand-600 border-slate-300 focus:ring-brand-500 rounded cursor-pointer"
+                  className="mt-0.5 w-4 h-4 text-brand-600 border-slate-300 dark:border-slate-700 rounded cursor-pointer"
                 />
-                <span className="text-xs text-slate-600 leading-snug">
-                  I want to receive promotional discounts, trending dining picks, and community updates via <strong className="text-slate-800">Email and SMS</strong>.
+                <span className="text-xs text-slate-600 dark:text-slate-400 leading-snug">
+                  I want to receive promotional discounts, trending dining picks, and community updates via <strong className="text-slate-800 dark:text-slate-200">Email and SMS</strong>.
                 </span>
               </label>
             </div>
@@ -282,9 +282,9 @@ export const RegisterPage = () => {
             </button>
           </form>
 
-          <div className="text-center text-xs text-slate-500 pt-2">
+          <div className="text-center text-xs text-slate-500 dark:text-slate-400 pt-2 border-t border-slate-100 dark:border-slate-800">
             Already have an account?{' '}
-            <Link to="/login" className="font-bold text-brand-600 hover:underline">
+            <Link to="/login" className="font-bold text-brand-600 dark:text-brand-400 hover:underline">
               Sign in
             </Link>
           </div>

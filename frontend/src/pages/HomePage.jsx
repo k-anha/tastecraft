@@ -53,52 +53,52 @@ export const HomePage = () => {
   };
 
   const quickCuisines = [
-    { name: 'Italian', icon: '🍝', bg: 'bg-amber-100 text-amber-900' },
-    { name: 'Japanese', icon: '🍜', bg: 'bg-rose-100 text-rose-900' },
-    { name: 'Mexican', icon: '🌮', bg: 'bg-emerald-100 text-emerald-900' },
-    { name: 'Indian', icon: '🍛', bg: 'bg-orange-100 text-orange-900' },
-    { name: 'American BBQ', icon: '🍖', bg: 'bg-red-100 text-red-900' },
-    { name: 'French', icon: '🥐', bg: 'bg-blue-100 text-blue-900' },
-    { name: 'Vegan / Healthy', icon: '🥗', bg: 'bg-green-100 text-green-900' },
-    { name: 'Cafe & Bakery', icon: '☕', bg: 'bg-purple-100 text-purple-900' },
+    { name: 'Italian', icon: '🍝', bg: 'bg-amber-100 dark:bg-amber-950/60 text-amber-900 dark:text-amber-300 border border-amber-200/50 dark:border-amber-800/50' },
+    { name: 'Japanese', icon: '🍜', bg: 'bg-rose-100 dark:bg-rose-950/60 text-rose-900 dark:text-rose-300 border border-rose-200/50 dark:border-rose-800/50' },
+    { name: 'Mexican', icon: '🌮', bg: 'bg-emerald-100 dark:bg-emerald-950/60 text-emerald-900 dark:text-emerald-300 border border-emerald-200/50 dark:border-emerald-800/50' },
+    { name: 'Indian', icon: '🍛', bg: 'bg-orange-100 dark:bg-orange-950/60 text-orange-900 dark:text-orange-300 border border-orange-200/50 dark:border-orange-800/50' },
+    { name: 'American BBQ', icon: '🍖', bg: 'bg-red-100 dark:bg-red-950/60 text-red-900 dark:text-red-300 border border-red-200/50 dark:border-red-800/50' },
+    { name: 'French', icon: '🥐', bg: 'bg-blue-100 dark:bg-blue-950/60 text-blue-900 dark:text-blue-300 border border-blue-200/50 dark:border-blue-800/50' },
+    { name: 'Vegan / Healthy', icon: '🥗', bg: 'bg-green-100 dark:bg-green-950/60 text-green-900 dark:text-green-300 border border-green-200/50 dark:border-green-800/50' },
+    { name: 'Cafe & Bakery', icon: '☕', bg: 'bg-purple-100 dark:bg-purple-950/60 text-purple-900 dark:text-purple-300 border border-purple-200/50 dark:border-purple-800/50' },
   ];
 
   return (
     <div className="space-y-16 pb-16">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-amber-50/40 to-slate-50 py-16 sm:py-24 border-b border-slate-200/60">
+      <section className="relative overflow-hidden bg-gradient-to-b from-brand-50/70 via-amber-50/40 to-slate-50 dark:from-slate-900/60 dark:via-slate-900/40 dark:to-slate-950 py-16 sm:py-24 border-b border-slate-200/60 dark:border-slate-800 transition-colors">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="max-w-3xl mx-auto text-center space-y-6">
-            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100/80 border border-brand-200 text-brand-900 text-xs font-bold uppercase tracking-wider shadow-sm">
-              <Flame className="w-4 h-4 text-brand-600 animate-pulse" />
+            <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-brand-100/80 dark:bg-brand-950/60 border border-brand-200 dark:border-brand-800/80 text-brand-900 dark:text-brand-300 text-xs font-bold uppercase tracking-wider shadow-sm">
+              <Flame className="w-4 h-4 text-brand-600 dark:text-brand-400 animate-pulse" />
               The Multi-Criteria Restaurant Review Platform
             </div>
 
-            <h1 className="font-serif-brand text-4xl sm:text-6xl font-extrabold text-slate-900 tracking-tight leading-[1.15]">
+            <h1 className="font-serif-brand text-4xl sm:text-6xl font-extrabold text-slate-900 dark:text-white tracking-tight leading-[1.15]">
               Real Food. Honest Ratings. <br />
               <span className="bg-gradient-to-r from-brand-600 via-amber-600 to-orange-500 bg-clip-text text-transparent">
                 Every Dish Detailed.
               </span>
             </h1>
 
-            <p className="text-base sm:text-lg text-slate-600 max-w-2xl mx-auto leading-relaxed">
+            <p className="text-base sm:text-lg text-slate-600 dark:text-slate-300 max-w-2xl mx-auto leading-relaxed">
               Don't settle for generic 1-to-5 star averages. Discover restaurants evaluated across 
-              <strong> Food Quality</strong>, <strong>Value & Prices</strong>, <strong>Service</strong>, and <strong>Ambiance</strong> with item-by-item tasting comments.
+              <strong className="text-slate-900 dark:text-white"> Food Quality</strong>, <strong className="text-slate-900 dark:text-white">Value & Prices</strong>, <strong className="text-slate-900 dark:text-white">Service</strong>, and <strong className="text-slate-900 dark:text-white">Ambiance</strong> with item-by-item tasting comments.
             </p>
 
             {/* Hero Search Box */}
             <form
               onSubmit={handleHeroSearch}
-              className="mt-8 flex flex-col sm:flex-row items-center gap-2.5 p-2 bg-white rounded-2xl sm:rounded-full border border-slate-300/80 shadow-xl shadow-brand-950/5 max-w-2xl mx-auto"
+              className="mt-8 flex flex-col sm:flex-row items-center gap-2.5 p-2 bg-white dark:bg-slate-900 rounded-2xl sm:rounded-full border border-slate-300/80 dark:border-slate-700 shadow-xl shadow-brand-950/5 max-w-2xl mx-auto"
             >
               <div className="flex items-center flex-1 w-full pl-3 pr-2">
-                <Search className="w-5 h-5 text-slate-400 mr-2 flex-shrink-0" />
+                <Search className="w-5 h-5 text-slate-400 dark:text-slate-500 mr-2 flex-shrink-0" />
                 <input
                   type="text"
                   placeholder="Search restaurants, cuisines, or specific dishes (e.g. Birria, Truffle, Ramen)..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full py-2.5 text-sm bg-transparent text-slate-800 placeholder-slate-400 focus:outline-none"
+                  className="w-full py-2.5 text-sm bg-transparent text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none"
                 />
               </div>
               <button
@@ -112,7 +112,7 @@ export const HomePage = () => {
 
             {/* Popular Cuisines Quick Pills */}
             <div className="pt-6 flex flex-wrap items-center justify-center gap-2">
-              <span className="text-xs font-bold text-slate-400 mr-1">Trending:</span>
+              <span className="text-xs font-bold text-slate-400 dark:text-slate-500 mr-1">Trending:</span>
               {quickCuisines.map((c) => (
                 <button
                   key={c.name}
@@ -131,7 +131,7 @@ export const HomePage = () => {
 
       {/* 4 Pillars Rating Banner */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-slate-900 text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden">
+        <div className="bg-slate-900 dark:bg-slate-900/90 text-white rounded-3xl p-8 sm:p-12 shadow-xl relative overflow-hidden border border-slate-800">
           <div className="absolute -right-16 -bottom-16 w-64 h-64 rounded-full bg-brand-500/10 blur-3xl pointer-events-none" />
           <div className="text-center max-w-2xl mx-auto mb-10 space-y-2">
             <span className="text-xs font-bold uppercase tracking-widest text-brand-400">
@@ -193,17 +193,17 @@ export const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-brand-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">
               <Award className="w-4 h-4" />
               Top Rated by Foodies
             </div>
-            <h2 className="font-serif-brand text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+            <h2 className="font-serif-brand text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
               Highest-Rated Dining Spots
             </h2>
           </div>
           <Link
             to="/explore?sort=highest_rated"
-            className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 group"
+            className="text-sm font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 flex items-center gap-1 group"
           >
             <span>View All Restaurants</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -211,12 +211,12 @@ export const HomePage = () => {
         </div>
 
         {loading ? (
-          <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
             <DatabaseLoader message="Fetching highest-rated dining spots..." subtitle="Querying verified foodie ratings and scores from database" />
           </div>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Suspense fallback={<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><div className="h-80 bg-slate-100 rounded-2xl animate-pulse" /></div>}>
+            <Suspense fallback={<div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"><div className="h-80 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" /></div>}>
               {topRestaurants.map((restaurant) => (
                 <RestaurantCard key={restaurant.id} restaurant={restaurant} />
               ))}
@@ -229,17 +229,17 @@ export const HomePage = () => {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8 pt-6">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <div className="flex items-center gap-2 text-xs font-bold text-brand-600 uppercase tracking-wider">
+            <div className="flex items-center gap-2 text-xs font-bold text-brand-600 dark:text-brand-400 uppercase tracking-wider">
               <TrendingUp className="w-4 h-4" />
               Community Feed
             </div>
-            <h2 className="font-serif-brand text-2xl sm:text-3xl font-bold text-slate-900 mt-1">
+            <h2 className="font-serif-brand text-2xl sm:text-3xl font-bold text-slate-900 dark:text-slate-100 mt-1">
               Latest Food Reviews & Tasting Notes
             </h2>
           </div>
           <Link
             to="/explore"
-            className="text-sm font-bold text-brand-600 hover:text-brand-700 flex items-center gap-1 group"
+            className="text-sm font-bold text-brand-600 dark:text-brand-400 hover:text-brand-700 dark:hover:text-brand-300 flex items-center gap-1 group"
           >
             <span>Browse More</span>
             <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -249,12 +249,12 @@ export const HomePage = () => {
         {loading ? (
           <div className="space-y-4">
             {[1, 2].map((n) => (
-              <div key={n} className="h-60 rounded-2xl bg-slate-200 animate-pulse" />
+              <div key={n} className="h-60 rounded-2xl bg-slate-200 dark:bg-slate-800 animate-pulse" />
             ))}
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <Suspense fallback={<div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="h-60 bg-slate-100 rounded-2xl animate-pulse" /></div>}>
+            <Suspense fallback={<div className="grid grid-cols-1 lg:grid-cols-2 gap-6"><div className="h-60 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" /></div>}>
               {recentReviews.map((review) => (
                 <ReviewCard key={review.id} review={review} />
               ))}
@@ -285,4 +285,3 @@ export const HomePage = () => {
     </div>
   );
 };
-

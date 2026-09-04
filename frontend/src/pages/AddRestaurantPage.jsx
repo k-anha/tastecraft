@@ -187,27 +187,27 @@ export const AddRestaurantPage = () => {
       <div className="space-y-2">
         <Link
           to="/explore"
-          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 hover:text-slate-900 transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-100 transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Explore</span>
         </Link>
-        <h1 className="font-serif-brand text-3xl sm:text-4xl font-extrabold text-slate-900">
+        <h1 className="font-serif-brand text-3xl sm:text-4xl font-extrabold text-slate-900 dark:text-slate-100">
           List Your Restaurant on TasteCraft
         </h1>
-        <p className="text-xs sm:text-sm text-slate-500 max-w-2xl">
+        <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 max-w-2xl">
           Showcase your culinary concept, publish your digital menu with high-resolution food imagery, and connect with passionate food lovers.
         </p>
       </div>
 
       {/* Auth & Role Guard Banner */}
       {!isAuthenticated ? (
-        <div className="p-6 rounded-3xl bg-amber-50 border border-amber-200 text-amber-900 space-y-3">
+        <div className="p-6 rounded-3xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-amber-900 dark:text-amber-200 space-y-3">
           <div className="flex items-center gap-2 font-bold text-sm">
-            <AlertCircle className="w-5 h-5 text-amber-600" />
+            <AlertCircle className="w-5 h-5 text-amber-600 dark:text-amber-400" />
             <span>Sign In Required</span>
           </div>
-          <p className="text-xs text-amber-800 leading-relaxed">
+          <p className="text-xs text-amber-800 dark:text-amber-300 leading-relaxed">
             Please sign in or create an account with Restaurant Owner status to list your business.
           </p>
           <Link
@@ -218,18 +218,18 @@ export const AddRestaurantPage = () => {
           </Link>
         </div>
       ) : user?.role !== 'owner' && user?.role !== 'admin' ? (
-        <div className="p-6 rounded-3xl bg-brand-50 border border-brand-200 text-brand-900 space-y-3 shadow-sm">
+        <div className="p-6 rounded-3xl bg-brand-50 dark:bg-brand-950/40 border border-brand-200 dark:border-brand-800/50 text-brand-900 dark:text-brand-200 space-y-3 shadow-sm">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-center gap-2 font-bold text-sm">
-              <ShieldCheck className="w-5 h-5 text-brand-600" />
+              <ShieldCheck className="w-5 h-5 text-brand-600 dark:text-brand-400" />
               <span>Restaurant Owner Status Required</span>
             </div>
-            <div className="flex items-center gap-2 text-xs font-semibold text-slate-600">
-              {user.gender && <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200">{user.gender}</span>}
-              {user.country && <span className="px-2 py-0.5 rounded-md bg-white border border-slate-200">{user.country}</span>}
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400">
+              {user.gender && <span className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">{user.gender}</span>}
+              {user.country && <span className="px-2 py-0.5 rounded-md bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700">{user.country}</span>}
             </div>
           </div>
-          <p className="text-xs text-brand-800 leading-relaxed">
+          <p className="text-xs text-brand-800 dark:text-brand-300 leading-relaxed">
             You are currently signed in as <strong>{user?.full_name || user?.username}</strong> (Role: <span className="font-bold">Food Reviewer</span>). Only registered Restaurant Owners can publish new restaurant profiles on TasteCraft.
           </p>
           <button
@@ -243,21 +243,21 @@ export const AddRestaurantPage = () => {
           </button>
         </div>
       ) : (
-        <div className="p-5 rounded-2xl bg-emerald-50 border border-emerald-200 text-emerald-900 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
+        <div className="p-5 rounded-2xl bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200 dark:border-emerald-800/50 text-emerald-900 dark:text-emerald-200 flex flex-col sm:flex-row sm:items-center justify-between gap-3 shadow-sm">
           <div className="flex items-center gap-3">
-            <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+            <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
             <div className="space-y-0.5">
-              <p className="text-xs font-bold text-emerald-950">
+              <p className="text-xs font-bold text-emerald-950 dark:text-emerald-100">
                 Verified Restaurant Owner Account: {user?.full_name || user?.username}
               </p>
-              <p className="text-[11px] text-emerald-800">
+              <p className="text-[11px] text-emerald-800 dark:text-emerald-300">
                 This restaurant listing and its digital menu will be linked to your owner profile.
               </p>
             </div>
           </div>
-          <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 flex-shrink-0">
-            {user?.gender && <span className="px-2 py-0.5 rounded-md bg-white/80 border border-emerald-200">{user.gender}</span>}
-            {user?.country && <span className="px-2 py-0.5 rounded-md bg-white/80 border border-emerald-200">{user.country}</span>}
+          <div className="flex items-center gap-2 text-xs font-bold text-emerald-800 dark:text-emerald-300 flex-shrink-0">
+            {user?.gender && <span className="px-2 py-0.5 rounded-md bg-white/80 dark:bg-slate-800/80 border border-emerald-200 dark:border-emerald-800">{user.gender}</span>}
+            {user?.country && <span className="px-2 py-0.5 rounded-md bg-white/80 dark:bg-slate-800/80 border border-emerald-200 dark:border-emerald-800">{user.country}</span>}
           </div>
         </div>
       )}
@@ -265,20 +265,20 @@ export const AddRestaurantPage = () => {
       {/* Main Form */}
       <form onSubmit={handleSubmit} className="space-y-8">
         {/* Basic Restaurant Information */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-2xl bg-brand-50 text-brand-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-10 h-10 rounded-2xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center font-bold">
               <Building2 className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-slate-900">1. Basic Information</h2>
-              <p className="text-xs text-slate-400">Name, cuisine, and culinary philosophy</p>
+              <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">1. Basic Information</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Name, cuisine, and culinary philosophy</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Restaurant Name *
               </label>
               <input
@@ -287,12 +287,12 @@ export const AddRestaurantPage = () => {
                 placeholder="e.g. Osteria Bella Vista"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full text-sm rounded-xl border border-slate-200 bg-slate-50/50 px-3.5 py-2.5 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Description & Story *
               </label>
               <textarea
@@ -301,18 +301,18 @@ export const AddRestaurantPage = () => {
                 placeholder="Describe the dining concept, chef specialties, ambiance, and culinary philosophy..."
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                className="w-full text-sm rounded-xl border border-slate-200 bg-slate-50/50 p-3.5 text-slate-800 focus:bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-sm rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50/50 dark:bg-slate-800 p-3.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-900 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Cuisine Type *
               </label>
               <select
                 value={cuisineType}
                 onChange={(e) => setCuisineType(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 font-semibold focus:outline-none focus:ring-2 focus:ring-brand-500"
               >
                 {commonCuisines.map((c) => (
                   <option key={c} value={c}>{c}</option>
@@ -322,7 +322,7 @@ export const AddRestaurantPage = () => {
 
             {cuisineType === 'Other' && (
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                   Specify Cuisine *
                 </label>
                 <input
@@ -331,13 +331,13 @@ export const AddRestaurantPage = () => {
                   placeholder="e.g. Peruvian Fusion"
                   value={customCuisine}
                   onChange={(e) => setCustomCuisine(e.target.value)}
-                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             )}
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Price Range Tier *
               </label>
               <div className="grid grid-cols-4 gap-2">
@@ -349,7 +349,7 @@ export const AddRestaurantPage = () => {
                     className={`py-2 rounded-xl text-xs font-bold transition-all border ${
                       priceRange === tier
                         ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
-                        : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                        : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                     }`}
                   >
                     {getPriceTier(tier)}
@@ -361,20 +361,20 @@ export const AddRestaurantPage = () => {
         </div>
 
         {/* Location & Contact Details */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-10 h-10 rounded-2xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 dark:text-emerald-400 flex items-center justify-center font-bold">
               <MapPin className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-slate-900">2. Location & Contact</h2>
-              <p className="text-xs text-slate-400">Where guests can find and contact you</p>
+              <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">2. Location & Contact</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Where guests can find and contact you</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="sm:col-span-2">
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Street Address *
               </label>
               <input
@@ -383,12 +383,12 @@ export const AddRestaurantPage = () => {
                 placeholder="e.g. 124 Main Street"
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 City *
               </label>
               <input
@@ -397,12 +397,12 @@ export const AddRestaurantPage = () => {
                 placeholder="e.g. Seattle"
                 value={city}
                 onChange={(e) => setCity(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 State / Region
               </label>
               <input
@@ -410,21 +410,21 @@ export const AddRestaurantPage = () => {
                 placeholder="e.g. WA"
                 value={state}
                 onChange={(e) => setState(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             {/* Phone Number with Profile Autofill Option */}
             <div className="sm:col-span-2">
               <div className="flex items-center justify-between mb-1.5">
-                <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider">
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider">
                   Restaurant Phone Number
                 </label>
                 {user?.phone_number && (
                   <button
                     type="button"
                     onClick={handleUseProfilePhone}
-                    className="text-[11px] font-bold text-brand-600 hover:underline flex items-center gap-1"
+                    className="text-[11px] font-bold text-brand-600 dark:text-brand-400 hover:underline flex items-center gap-1"
                   >
                     <Phone className="w-3 h-3" />
                     <span>Autofill from Profile ({user.country_code || ''} {user.phone_number})</span>
@@ -436,12 +436,12 @@ export const AddRestaurantPage = () => {
                 placeholder="(206) 555-0199"
                 value={phoneNumber}
                 onChange={(e) => setPhoneNumber(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500 font-medium"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Website URL
               </label>
               <input
@@ -449,12 +449,12 @@ export const AddRestaurantPage = () => {
                 placeholder="https://www.osteriabv.com"
                 value={website}
                 onChange={(e) => setWebsite(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Operating Hours
               </label>
               <input
@@ -462,27 +462,27 @@ export const AddRestaurantPage = () => {
                 placeholder="Mon-Sun: 11:30 AM - 10:00 PM"
                 value={openingHours}
                 onChange={(e) => setOpeningHours(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
         </div>
 
         {/* Photos & Visuals */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400 flex items-center justify-center font-bold">
               <Image className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-slate-900">3. High-Resolution Visuals</h2>
-              <p className="text-xs text-slate-400">Showcase dining room ambiance and culinary plating</p>
+              <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">3. High-Resolution Visuals</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Showcase dining room ambiance and culinary plating</p>
             </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Primary Image URL
               </label>
               <input
@@ -490,12 +490,12 @@ export const AddRestaurantPage = () => {
                 placeholder="https://images.unsplash.com/..."
                 value={imageUrl}
                 onChange={(e) => setImageUrl(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
 
             <div>
-              <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-1.5">
+              <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase tracking-wider mb-1.5">
                 Hero Banner Image URL
               </label>
               <input
@@ -503,21 +503,21 @@ export const AddRestaurantPage = () => {
                 placeholder="https://images.unsplash.com/..."
                 value={coverImageUrl}
                 onChange={(e) => setCoverImageUrl(e.target.value)}
-                className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 px-3.5 py-2.5 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 px-3.5 py-2.5 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
               />
             </div>
           </div>
         </div>
 
         {/* Highlights & Features */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-4">
-          <div className="flex items-center gap-3 pb-4 border-b border-slate-100">
-            <div className="w-10 h-10 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center font-bold">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-4">
+          <div className="flex items-center gap-3 pb-4 border-b border-slate-100 dark:border-slate-800">
+            <div className="w-10 h-10 rounded-2xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 dark:text-purple-400 flex items-center justify-center font-bold">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h2 className="font-bold text-base text-slate-900">4. Highlights & Amenities</h2>
-              <p className="text-xs text-slate-400">Select what makes this restaurant special</p>
+              <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">4. Highlights & Amenities</h2>
+              <p className="text-xs text-slate-400 dark:text-slate-500">Select what makes this restaurant special</p>
             </div>
           </div>
 
@@ -531,11 +531,11 @@ export const AddRestaurantPage = () => {
                   onClick={() => toggleFeature(feat)}
                   className={`p-3 rounded-2xl border text-xs font-bold text-left transition-all flex items-center gap-2 ${
                     isSelected
-                      ? 'bg-brand-50/80 border-brand-300 text-brand-900 shadow-sm'
-                      : 'bg-slate-50/60 border-slate-200 text-slate-600 hover:bg-slate-100'
+                      ? 'bg-brand-50/80 dark:bg-brand-950/60 border-brand-300 dark:border-brand-700 text-brand-900 dark:text-brand-200 shadow-sm'
+                      : 'bg-slate-50/60 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                   }`}
                 >
-                  <CheckCircle2 className={`w-4 h-4 ${isSelected ? 'text-brand-600' : 'text-slate-300'}`} />
+                  <CheckCircle2 className={`w-4 h-4 ${isSelected ? 'text-brand-600 dark:text-brand-400' : 'text-slate-300 dark:text-slate-600'}`} />
                   <span>{feat}</span>
                 </button>
               );
@@ -544,24 +544,24 @@ export const AddRestaurantPage = () => {
         </div>
 
         {/* Initial Digital Menu Items */}
-        <div className="bg-white rounded-3xl border border-slate-200 p-6 sm:p-8 shadow-sm space-y-6">
-          <div className="flex items-center justify-between pb-4 border-b border-slate-100">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-6 sm:p-8 shadow-sm space-y-6">
+          <div className="flex items-center justify-between pb-4 border-b border-slate-100 dark:border-slate-800">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center font-bold">
+              <div className="w-10 h-10 rounded-2xl bg-amber-50 dark:bg-amber-950/50 text-amber-600 dark:text-amber-400 flex items-center justify-center font-bold">
                 <Utensils className="w-5 h-5" />
               </div>
               <div>
-                <h2 className="font-bold text-base text-slate-900">5. Initial Menu Items</h2>
-                <p className="text-xs text-slate-400">You and other foodies can also add more dishes later</p>
+                <h2 className="font-bold text-base text-slate-900 dark:text-slate-100">5. Initial Menu Items</h2>
+                <p className="text-xs text-slate-400 dark:text-slate-500">You and other foodies can also add more dishes later</p>
               </div>
             </div>
 
             <button
               type="button"
               onClick={handleAddMenuItem}
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-800 text-xs font-bold transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 text-xs font-bold transition-all"
             >
-              <Plus className="w-3.5 h-3.5 text-brand-600" />
+              <Plus className="w-3.5 h-3.5 text-brand-600 dark:text-brand-400" />
               <span>Add Dish</span>
             </button>
           </div>
@@ -570,10 +570,10 @@ export const AddRestaurantPage = () => {
             {menuItems.map((item, index) => (
               <div
                 key={index}
-                className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-3 relative"
+                className="p-4 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700 space-y-3 relative"
               >
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-slate-700">Dish #{index + 1}</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Dish #{index + 1}</span>
                   {menuItems.length > 1 && (
                     <button
                       type="button"
@@ -591,7 +591,7 @@ export const AddRestaurantPage = () => {
                     placeholder="Dish Name (e.g. Truffle Pappardelle)"
                     value={item.name}
                     onChange={(e) => handleMenuItemChange(index, 'name', e.target.value)}
-                    className="sm:col-span-2 text-xs rounded-xl border border-slate-200 bg-white px-3 py-2 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                    className="sm:col-span-2 text-xs rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 px-3 py-2 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                   />
                   <div className="relative">
                     <span className="text-slate-400 absolute left-3 top-2 text-xs font-bold">{currencySymbol}</span>
@@ -601,7 +601,7 @@ export const AddRestaurantPage = () => {
                       placeholder="Price"
                       value={item.price}
                       onChange={(e) => handleMenuItemChange(index, 'price', e.target.value)}
-                      className="w-full pl-7 pr-3 py-2 text-xs rounded-xl border border-slate-200 bg-white text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
+                      className="w-full pl-7 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"
                     />
                   </div>
                 </div>
@@ -611,7 +611,7 @@ export const AddRestaurantPage = () => {
                   placeholder="Tasting description and key ingredients..."
                   value={item.description}
                   onChange={(e) => handleMenuItemChange(index, 'description', e.target.value)}
-                  className="w-full text-xs rounded-xl border border-slate-200 bg-white p-3 text-slate-800 focus:outline-none focus:ring-2 focus:ring-brand-500"
+                  className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 p-3 text-slate-800 dark:text-slate-100 placeholder-slate-400 dark:placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-brand-500"
                 />
               </div>
             ))}
@@ -622,7 +622,7 @@ export const AddRestaurantPage = () => {
         <div className="pt-4 flex items-center justify-end gap-3">
           <Link
             to="/explore"
-            className="px-6 py-3 rounded-2xl border border-slate-200 hover:bg-slate-50 text-slate-700 font-bold text-xs"
+            className="px-6 py-3 rounded-2xl border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-300 font-bold text-xs"
           >
             Cancel
           </Link>

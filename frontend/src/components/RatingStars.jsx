@@ -23,7 +23,7 @@ export const RatingStars = ({
 
   return (
     <div className="flex items-center gap-2">
-      {label && <span className="text-sm font-medium text-slate-700 min-w-[90px]">{label}</span>}
+      {label && <span className="text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[90px]">{label}</span>}
       <div
         className="flex items-center gap-0.5"
         onMouseLeave={() => interactive && setHoverRating(0)}
@@ -50,7 +50,7 @@ export const RatingStars = ({
                     ? 'fill-amber-400 text-amber-400 drop-shadow-sm'
                     : isHalf
                     ? 'fill-amber-300/60 text-amber-400'
-                    : 'fill-slate-100 text-slate-300'
+                    : 'fill-slate-100 dark:fill-slate-800 text-slate-300 dark:text-slate-700'
                 }`}
               />
             </button>
@@ -58,7 +58,7 @@ export const RatingStars = ({
         })}
       </div>
       {showScore && (
-        <span className="text-sm font-bold text-slate-800 ml-1">
+        <span className="text-sm font-bold text-slate-800 dark:text-slate-200 ml-1">
           {rating ? Number(rating).toFixed(1) : 'New'}
         </span>
       )}

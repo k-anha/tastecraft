@@ -307,7 +307,7 @@ export const RestaurantDetailPage = () => {
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="bg-white rounded-3xl border border-slate-200 p-8 shadow-sm">
+        <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-sm">
           <DatabaseLoader message="Fetching restaurant profile & menu..." subtitle="Retrieving digital menu, multi-criteria breakdown & tasting notes from database" />
         </div>
       </div>
@@ -317,8 +317,8 @@ export const RestaurantDetailPage = () => {
   if (!restaurant) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center space-y-4">
-        <h2 className="text-2xl font-bold text-slate-800">Restaurant Not Found</h2>
-        <Link to="/explore" className="text-brand-600 underline font-semibold">
+        <h2 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Restaurant Not Found</h2>
+        <Link to="/explore" className="text-brand-600 dark:text-brand-400 underline font-semibold">
           Return to Explore
         </Link>
       </div>
@@ -485,13 +485,13 @@ export const RestaurantDetailPage = () => {
 
       {/* Tabs Navigation */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center gap-4 border-b border-slate-200">
+        <div className="flex items-center gap-4 border-b border-slate-200 dark:border-slate-800">
           <button
             onClick={() => setActiveTab('overview')}
             className={`pb-3.5 text-sm font-bold border-b-2 transition-all ${
               activeTab === 'overview'
-                ? 'border-brand-500 text-brand-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-brand-500 text-brand-600 dark:text-brand-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             Overview & Menu
@@ -500,12 +500,12 @@ export const RestaurantDetailPage = () => {
             onClick={() => setActiveTab('reviews')}
             className={`pb-3.5 text-sm font-bold border-b-2 transition-all flex items-center gap-1.5 ${
               activeTab === 'reviews'
-                ? 'border-brand-500 text-brand-600'
-                : 'border-transparent text-slate-500 hover:text-slate-800'
+                ? 'border-brand-500 text-brand-600 dark:text-brand-400'
+                : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-800 dark:hover:text-slate-200'
             }`}
           >
             <span>Customer Reviews</span>
-            <span className="px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-xs font-semibold">
+            <span className="px-2 py-0.5 rounded-full bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-xs font-semibold">
               {reviews.length}
             </span>
           </button>
@@ -520,8 +520,8 @@ export const RestaurantDetailPage = () => {
             <div className="lg:col-span-2 space-y-8">
               {/* Features & Atmosphere Badges */}
               {featuresList.length > 0 && (
-                <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-3">
-                  <h3 className="font-bold text-slate-900 text-sm flex items-center gap-2">
+                <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-3">
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-sm flex items-center gap-2">
                     <Sparkles className="w-4 h-4 text-brand-500" />
                     Highlights & Amenities
                   </h3>
@@ -529,7 +529,7 @@ export const RestaurantDetailPage = () => {
                     {featuresList.map((f, idx) => (
                       <span
                         key={idx}
-                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 border border-slate-200 text-slate-700 text-xs font-semibold"
+                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold"
                       >
                         <CheckCircle2 className="w-3.5 h-3.5 text-brand-500" />
                         {f}
@@ -540,13 +540,13 @@ export const RestaurantDetailPage = () => {
               )}
 
               {/* Menu Section */}
-              <div className="bg-white rounded-2xl border border-slate-200/80 p-6 shadow-sm space-y-6">
+              <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200/80 dark:border-slate-800 p-6 shadow-sm space-y-6">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                   <div>
-                    <h3 className="font-serif-brand text-2xl font-bold text-slate-900">
+                    <h3 className="font-serif-brand text-2xl font-bold text-slate-900 dark:text-slate-100">
                       Signature Dishes & Menu
                     </h3>
-                    <p className="text-xs text-slate-500 mt-0.5">
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                       Explore house specialties or contribute your favorite dishes and food photos.
                     </p>
                   </div>
@@ -572,7 +572,7 @@ export const RestaurantDetailPage = () => {
                 </div>
 
                 {/* Category Filter Pills */}
-                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100">
+                <div className="flex flex-wrap gap-1.5 pt-2 border-t border-slate-100 dark:border-slate-800">
                   {categories.map((cat) => (
                     <button
                       key={cat}
@@ -580,7 +580,7 @@ export const RestaurantDetailPage = () => {
                       className={`px-3 py-1 rounded-xl text-xs font-bold transition-all ${
                         selectedMenuCategory === cat
                           ? 'bg-brand-500 text-white shadow-sm'
-                          : 'bg-slate-100 hover:bg-slate-200/70 text-slate-700'
+                          : 'bg-slate-100 dark:bg-slate-800 hover:bg-slate-200/70 dark:hover:bg-slate-700 text-slate-700 dark:text-slate-300'
                       }`}
                     >
                       {cat}
@@ -591,12 +591,12 @@ export const RestaurantDetailPage = () => {
                 {/* Menu Items Grid */}
                 {filteredMenuItems.length === 0 ? (
                   <div className="py-8 text-center space-y-3">
-                    <Utensils className="w-8 h-8 text-slate-300 mx-auto" />
-                    <p className="text-xs text-slate-500">No menu items listed in this category yet.</p>
+                    <Utensils className="w-8 h-8 text-slate-300 dark:text-slate-600 mx-auto" />
+                    <p className="text-xs text-slate-500 dark:text-slate-400">No menu items listed in this category yet.</p>
                     <button
                       type="button"
                       onClick={() => setAddDishModalOpen(true)}
-                      className="text-xs font-bold text-brand-600 hover:underline"
+                      className="text-xs font-bold text-brand-600 dark:text-brand-400 hover:underline"
                     >
                       + Be the first to add a dish
                     </button>
@@ -606,10 +606,10 @@ export const RestaurantDetailPage = () => {
                     {filteredMenuItems.map((item) => (
                       <div
                         key={item.id}
-                        className="p-4 rounded-xl border border-slate-200/80 bg-slate-50/50 hover:bg-white hover:shadow-md transition-all flex flex-col justify-between"
+                        className="p-4 rounded-xl border border-slate-200/80 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 hover:bg-white dark:hover:bg-slate-800 hover:shadow-md transition-all flex flex-col justify-between"
                       >
                         {item.image_url && (
-                          <div className="mb-3 rounded-lg overflow-hidden h-32 w-full bg-slate-100">
+                          <div className="mb-3 rounded-lg overflow-hidden h-32 w-full bg-slate-100 dark:bg-slate-800">
                             <img
                               src={item.image_url}
                               alt={item.name}
@@ -619,33 +619,33 @@ export const RestaurantDetailPage = () => {
                         )}
                         <div className="space-y-1.5">
                           <div className="flex items-start justify-between gap-2">
-                            <h4 className="font-bold text-slate-900 text-sm leading-snug">
+                            <h4 className="font-bold text-slate-900 dark:text-slate-100 text-sm leading-snug">
                               {item.name}
                             </h4>
-                            <span className="font-extrabold text-brand-600 text-sm flex-shrink-0">
+                            <span className="font-extrabold text-brand-600 dark:text-brand-400 text-sm flex-shrink-0">
                               {formatPrice(item.price)}
                             </span>
                           </div>
 
                           {item.is_signature && (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 text-amber-800 text-[10px] font-bold">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-transparent dark:border-amber-800/40 text-[10px] font-bold">
                               <Star className="w-2.5 h-2.5 fill-amber-500 text-amber-500" />
                               House Signature
                             </span>
                           )}
 
                           {item.description && (
-                            <p className="text-xs text-slate-600 leading-relaxed pt-1">
+                            <p className="text-xs text-slate-600 dark:text-slate-300 leading-relaxed pt-1">
                               {item.description}
                             </p>
                           )}
                         </div>
 
-                        <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500">
+                        <div className="mt-3 pt-2 border-t border-slate-100 dark:border-slate-700/60 flex items-center justify-between text-[11px] text-slate-500 dark:text-slate-400">
                           <div className="flex items-center gap-1.5">
                             <span className="font-medium">{item.category}</span>
                             {item.user_id === user?.id && (
-                              <span className="px-1.5 py-0.5 rounded bg-blue-100 text-blue-800 text-[9px] font-bold">
+                              <span className="px-1.5 py-0.5 rounded bg-blue-100 dark:bg-blue-950/60 text-blue-800 dark:text-blue-300 border border-transparent dark:border-blue-800/40 text-[9px] font-bold">
                                 Your Upload
                               </span>
                             )}
@@ -657,7 +657,7 @@ export const RestaurantDetailPage = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleStartEditDish(item)}
-                                  className="p-1 rounded text-slate-500 hover:text-brand-600 hover:bg-slate-100 transition-colors"
+                                  className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-brand-600 dark:hover:text-brand-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
                                   title={item.user_id === user?.id ? "Edit the dish you uploaded" : "Edit food item & photo"}
                                 >
                                   <Edit2 className="w-3.5 h-3.5" />
@@ -665,7 +665,7 @@ export const RestaurantDetailPage = () => {
                                 <button
                                   type="button"
                                   onClick={() => handleDeleteMenuItem(item.id, item.name)}
-                                  className="p-1 rounded text-slate-500 hover:text-rose-600 hover:bg-rose-50 transition-colors"
+                                  className="p-1 rounded text-slate-500 dark:text-slate-400 hover:text-rose-600 dark:hover:text-rose-400 hover:bg-rose-50 dark:hover:bg-rose-950/40 transition-colors"
                                   title={item.user_id === user?.id ? "Delete the dish you uploaded" : "Delete food item"}
                                 >
                                   <Trash2 className="w-3.5 h-3.5" />
@@ -674,7 +674,7 @@ export const RestaurantDetailPage = () => {
                             )}
                             <Link
                               to={`/write-review/${restaurant.id}`}
-                              className="text-brand-600 hover:underline font-bold ml-1"
+                              className="text-brand-600 dark:text-brand-400 hover:underline font-bold ml-1"
                             >
                               Review Dish →
                             </Link>
@@ -689,36 +689,36 @@ export const RestaurantDetailPage = () => {
 
             {/* Right Col: Rating Breakdown Card */}
             <div className="space-y-6">
-              <Suspense fallback={<div className="h-96 bg-white rounded-2xl border animate-pulse" />}>
+              <Suspense fallback={<div className="h-96 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 animate-pulse" />}>
                 <RatingBreakdown stats={stats} />
               </Suspense>
 
               {/* Owner Info Card */}
               {restaurant.owner_id ? (
-                <div className="p-4 rounded-2xl bg-white border border-slate-200 shadow-sm flex items-center justify-between gap-3">
+                <div className="p-4 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm flex items-center justify-between gap-3">
                   <div className="flex items-center gap-3">
-                    <ShieldCheck className="w-6 h-6 text-emerald-600 flex-shrink-0" />
+                    <ShieldCheck className="w-6 h-6 text-emerald-600 dark:text-emerald-400 flex-shrink-0" />
                     <div className="text-xs">
-                      <p className="font-bold text-slate-900">Verified Restaurant Listing</p>
-                      <p className="text-slate-500">Managed directly by official restaurant owner.</p>
+                      <p className="font-bold text-slate-900 dark:text-slate-100">Verified Restaurant Listing</p>
+                      <p className="text-slate-500 dark:text-slate-400">Managed directly by official restaurant owner.</p>
                     </div>
                   </div>
                   {isOwner && (
                     <button
                       type="button"
                       onClick={handleStartEditRestaurant}
-                      className="px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 text-xs font-bold text-slate-700 flex items-center gap-1 shadow-sm flex-shrink-0"
+                      className="px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 text-xs font-bold text-slate-700 dark:text-slate-200 flex items-center gap-1 shadow-sm flex-shrink-0"
                     >
-                      <Edit2 className="w-3 h-3 text-brand-600" />
+                      <Edit2 className="w-3 h-3 text-brand-600 dark:text-brand-400" />
                       <span>Edit Info</span>
                     </button>
                   )}
                 </div>
               ) : (
-                <div className="p-4 rounded-2xl bg-amber-50 border border-amber-200 text-amber-900 flex items-center justify-between gap-3">
+                <div className="p-4 rounded-2xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800/50 text-amber-900 dark:text-amber-200 flex items-center justify-between gap-3">
                   <div className="text-xs">
                     <p className="font-bold">Unclaimed Listing</p>
-                    <p className="text-[11px] text-amber-800">Are you the owner of this establishment?</p>
+                    <p className="text-[11px] text-amber-800 dark:text-amber-300">Are you the owner of this establishment?</p>
                   </div>
                   {user?.role === 'owner' ? (
                     <button
@@ -730,7 +730,7 @@ export const RestaurantDetailPage = () => {
                   ) : (
                     <Link
                       to="/login"
-                      className="text-xs font-bold text-amber-900 underline flex-shrink-0"
+                      className="text-xs font-bold text-amber-900 dark:text-amber-300 underline flex-shrink-0"
                     >
                       Sign In
                     </Link>
@@ -746,10 +746,10 @@ export const RestaurantDetailPage = () => {
           <div className="space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <h3 className="font-serif-brand text-2xl font-bold text-slate-900">
+                <h3 className="font-serif-brand text-2xl font-bold text-slate-900 dark:text-slate-100">
                   Verified Diner Experiences ({reviews.length})
                 </h3>
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-500 dark:text-slate-400">
                   Real reviews with multi-dimensional breakdowns and dish tasting notes.
                 </p>
               </div>
@@ -764,10 +764,10 @@ export const RestaurantDetailPage = () => {
             </div>
 
             {reviews.length === 0 ? (
-              <div className="bg-white rounded-3xl border border-dashed border-slate-300 p-12 text-center space-y-4">
-                <Utensils className="w-10 h-10 text-slate-300 mx-auto" />
-                <h4 className="font-bold text-slate-700 text-base">No reviews yet</h4>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
+              <div className="bg-white dark:bg-slate-900 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 p-12 text-center space-y-4">
+                <Utensils className="w-10 h-10 text-slate-300 dark:text-slate-600 mx-auto" />
+                <h4 className="font-bold text-slate-700 dark:text-slate-200 text-base">No reviews yet</h4>
+                <p className="text-xs text-slate-500 dark:text-slate-400 max-w-sm mx-auto">
                   Be the first gourmet diner to share feedback on food quality, service, value, and ambiance!
                 </p>
                 <Link
@@ -779,7 +779,7 @@ export const RestaurantDetailPage = () => {
               </div>
             ) : (
               <div className="space-y-6">
-                <Suspense fallback={<div className="h-60 bg-slate-100 rounded-2xl animate-pulse" />}>
+                <Suspense fallback={<div className="h-60 bg-slate-100 dark:bg-slate-800 rounded-2xl animate-pulse" />}>
                   {reviews.map((review) => (
                     <ReviewCard key={review.id} review={review} onUpdate={fetchRestaurantData} />
                   ))}
@@ -792,22 +792,22 @@ export const RestaurantDetailPage = () => {
 
       {/* Edit Restaurant Details Modal (Owner / Admin) */}
       {editRestaurantModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-2xl w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center">
                   <Edit2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base">Edit Restaurant Details</h3>
-                  <p className="text-[11px] text-slate-500">Update restaurant information, address, contact, and photos</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">Edit Restaurant Details</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Update restaurant information, address, contact, and photos</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setEditRestaurantModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -816,40 +816,40 @@ export const RestaurantDetailPage = () => {
             <form onSubmit={handleSaveRestaurantSubmit} className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Restaurant Name *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Restaurant Name *</label>
                   <input
                     type="text"
                     required
                     value={editRestName}
                     onChange={(e) => setEditRestName(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500 font-semibold"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Story *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Description & Story *</label>
                   <textarea
                     rows={3}
                     required
                     value={editRestDesc}
                     onChange={(e) => setEditRestDesc(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Cuisine Type *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Cuisine Type *</label>
                   <input
                     type="text"
                     required
                     value={editRestCuisine}
                     onChange={(e) => setEditRestCuisine(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-semibold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 font-semibold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price Range Tier</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Price Range Tier</label>
                   <div className="grid grid-cols-4 gap-2">
                     {[1, 2, 3, 4].map((tier) => (
                       <button
@@ -859,7 +859,7 @@ export const RestaurantDetailPage = () => {
                         className={`py-2 rounded-xl text-xs font-bold transition-all border ${
                           editRestPriceRange === tier
                             ? 'bg-emerald-500 text-white border-emerald-500 shadow-sm'
-                            : 'bg-slate-50 border-slate-200 text-slate-700 hover:bg-slate-100'
+                            : 'bg-slate-50 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
                         }`}
                       >
                         {getPriceTier(tier)}
@@ -869,94 +869,94 @@ export const RestaurantDetailPage = () => {
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Street Address *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Street Address *</label>
                   <input
                     type="text"
                     required
                     value={editRestAddress}
                     onChange={(e) => setEditRestAddress(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">City *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">City *</label>
                   <input
                     type="text"
                     required
                     value={editRestCity}
                     onChange={(e) => setEditRestCity(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">State / Region</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">State / Region</label>
                   <input
                     type="text"
                     value={editRestState}
                     onChange={(e) => setEditRestState(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Phone Number</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Phone Number</label>
                   <input
                     type="text"
                     value={editRestPhone}
                     onChange={(e) => setEditRestPhone(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-medium"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500 font-medium"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Operating Hours</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Operating Hours</label>
                   <input
                     type="text"
                     value={editRestHours}
                     onChange={(e) => setEditRestHours(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Primary Image URL</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Primary Image URL</label>
                   <input
                     type="url"
                     value={editRestImageUrl}
                     onChange={(e) => setEditRestImageUrl(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Cover Banner Image URL</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Cover Banner Image URL</label>
                   <input
                     type="url"
                     value={editRestCoverImageUrl}
                     onChange={(e) => setEditRestCoverImageUrl(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
 
                 <div className="sm:col-span-2">
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Features & Amenities (comma separated)</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Features & Amenities (comma separated)</label>
                   <input
                     type="text"
                     placeholder="e.g. Outdoor Seating, Free WiFi, Vegan Options, Valet Parking"
                     value={editRestFeatures}
                     onChange={(e) => setEditRestFeatures(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setEditRestaurantModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -975,22 +975,22 @@ export const RestaurantDetailPage = () => {
 
       {/* Add Food Item / Dish Modal (Open to Anyone) */}
       {addDishModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center">
                   <Utensils className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base">Add Dish & Food Photo</h3>
-                  <p className="text-[11px] text-slate-500">Upload menu items for {restaurant.name}</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">Add Dish & Food Photo</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Upload menu items for {restaurant.name}</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setAddDishModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -998,24 +998,24 @@ export const RestaurantDetailPage = () => {
 
             <form onSubmit={handleAddDishSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Name *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Dish Name *</label>
                 <input
                   type="text"
                   required
                   placeholder="e.g. Crispy Pork Belly Bao"
                   value={dishName}
                   onChange={(e) => setDishName(e.target.value)}
-                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                  className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500 font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Category</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Category</label>
                   <select
                     value={dishCategory}
                     onChange={(e) => setDishCategory(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 font-medium focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="Appetizers">Appetizers</option>
                     <option value="Mains">Mains</option>
@@ -1026,7 +1026,7 @@ export const RestaurantDetailPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Price *</label>
                   <div className="relative">
                     <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
                     <input
@@ -1036,14 +1036,14 @@ export const RestaurantDetailPage = () => {
                       placeholder="18.5"
                       value={dishPrice}
                       onChange={(e) => setDishPrice(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-7 pr-3 py-2.5 text-slate-800 font-bold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-slate-800 dark:text-slate-100 font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Photo URL</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Dish Photo URL</label>
                 <div className="relative">
                   <Image className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                   <input
@@ -1051,19 +1051,19 @@ export const RestaurantDetailPage = () => {
                     placeholder="https://images.unsplash.com/..."
                     value={dishImageUrl}
                     onChange={(e) => setDishImageUrl(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-9 pr-3 py-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Ingredients</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Description & Ingredients</label>
                 <textarea
                   rows={2}
                   placeholder="Key flavors, cooking style, or dietary highlights..."
                   value={dishDescription}
                   onChange={(e) => setDishDescription(e.target.value)}
-                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -1073,17 +1073,17 @@ export const RestaurantDetailPage = () => {
                     type="checkbox"
                     checked={dishIsSignature}
                     onChange={(e) => setDishIsSignature(e.target.checked)}
-                    className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer"
+                    className="w-4 h-4 text-brand-600 rounded border-slate-300 dark:border-slate-700 focus:ring-brand-500 cursor-pointer"
                   />
-                  <span className="text-xs font-bold text-slate-700">Mark as House Signature Dish</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Mark as House Signature Dish</span>
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setAddDishModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
@@ -1102,22 +1102,22 @@ export const RestaurantDetailPage = () => {
 
       {/* Edit Food Item / Dish Modal (Owner / Admin) */}
       {editDishModalOpen && (
-        <div className="fixed inset-0 z-50 bg-slate-900/60 backdrop-blur-sm flex items-center justify-center p-4">
-          <div className="bg-white rounded-3xl border border-slate-200 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+        <div className="fixed inset-0 z-50 bg-slate-900/60 dark:bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4">
+          <div className="bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 max-w-lg w-full p-6 sm:p-8 shadow-2xl space-y-6 relative max-h-[90vh] overflow-y-auto">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100 dark:border-slate-800">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-brand-50 text-brand-600 flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-brand-50 dark:bg-brand-950/50 text-brand-600 dark:text-brand-400 flex items-center justify-center">
                   <Edit2 className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-base">Edit Food Item & Photo</h3>
-                  <p className="text-[11px] text-slate-500">Update pricing, description, or image</p>
+                  <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base">Edit Food Item & Photo</h3>
+                  <p className="text-[11px] text-slate-500 dark:text-slate-400">Update pricing, description, or image</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setEditDishModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 p-1"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -1125,23 +1125,23 @@ export const RestaurantDetailPage = () => {
 
             <form onSubmit={handleSaveEditDishSubmit} className="space-y-4">
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Name *</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Dish Name *</label>
                 <input
                   type="text"
                   required
                   value={editDishName}
                   onChange={(e) => setEditDishName(e.target.value)}
-                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500 font-semibold"
+                  className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500 font-semibold"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Category</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Category</label>
                   <select
                     value={editDishCategory}
                     onChange={(e) => setEditDishCategory(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 font-medium focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 font-medium focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   >
                     <option value="Appetizers">Appetizers</option>
                     <option value="Mains">Mains</option>
@@ -1152,7 +1152,7 @@ export const RestaurantDetailPage = () => {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Price *</label>
+                  <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Price *</label>
                   <div className="relative">
                     <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
                     <input
@@ -1161,14 +1161,14 @@ export const RestaurantDetailPage = () => {
                       required
                       value={editDishPrice}
                       onChange={(e) => setEditDishPrice(e.target.value)}
-                      className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-7 pr-3 py-2.5 text-slate-800 font-bold focus:bg-white focus:ring-2 focus:ring-brand-500"
+                      className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-slate-800 dark:text-slate-100 font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                     />
                   </div>
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Dish Photo URL</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Dish Photo URL</label>
                 <div className="relative">
                   <Image className="w-4 h-4 text-slate-400 absolute left-3 top-3 pointer-events-none" />
                   <input
@@ -1176,18 +1176,18 @@ export const RestaurantDetailPage = () => {
                     placeholder="https://images.unsplash.com/..."
                     value={editDishImageUrl}
                     onChange={(e) => setEditDishImageUrl(e.target.value)}
-                    className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 pl-9 pr-3 py-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                    className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-9 pr-3 py-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                   />
                 </div>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Description & Ingredients</label>
+                <label className="block text-xs font-bold text-slate-700 dark:text-slate-300 uppercase mb-1">Description & Ingredients</label>
                 <textarea
                   rows={2}
                   value={editDishDescription}
                   onChange={(e) => setEditDishDescription(e.target.value)}
-                  className="w-full text-xs rounded-xl border border-slate-200 bg-slate-50 p-2.5 text-slate-800 focus:bg-white focus:ring-2 focus:ring-brand-500"
+                  className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 p-2.5 text-slate-800 dark:text-slate-100 focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
                 />
               </div>
 
@@ -1197,17 +1197,17 @@ export const RestaurantDetailPage = () => {
                     type="checkbox"
                     checked={editDishIsSignature}
                     onChange={(e) => setEditDishIsSignature(e.target.checked)}
-                    className="w-4 h-4 text-brand-600 rounded border-slate-300 focus:ring-brand-500 cursor-pointer"
+                    className="w-4 h-4 text-brand-600 rounded border-slate-300 dark:border-slate-700 focus:ring-brand-500 cursor-pointer"
                   />
-                  <span className="text-xs font-bold text-slate-700">Mark as House Signature Dish</span>
+                  <span className="text-xs font-bold text-slate-700 dark:text-slate-300">Mark as House Signature Dish</span>
                 </label>
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100">
+              <div className="flex items-center justify-end gap-2 pt-3 border-t border-slate-100 dark:border-slate-800">
                 <button
                   type="button"
                   onClick={() => setEditDishModalOpen(false)}
-                  className="px-4 py-2 rounded-xl border border-slate-200 text-xs font-bold text-slate-600 hover:bg-slate-50"
+                  className="px-4 py-2 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800"
                 >
                   Cancel
                 </button>
