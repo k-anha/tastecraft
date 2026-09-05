@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { 
-  Search, Bookmark, PlusCircle, User, LogOut, Menu, X, 
-  UtensilsCrossed, ChevronDown, Globe, MapPin, Sun, Moon 
+import {
+  Search, Bookmark, PlusCircle, User, LogOut, Menu, X,
+  UtensilsCrossed, ChevronDown, Globe, MapPin, Sun, Moon,
 } from 'lucide-react';
+import { FaGithub } from 'react-icons/fa';
 import { useAuth } from '../context/AuthContext';
 import { useCountry } from '../context/CountryContext';
 import { useTheme } from '../context/ThemeContext';
@@ -13,7 +14,7 @@ export const Navbar = () => {
   const { country, countryCode, setCountry, countries } = useCountry();
   const { theme, isDark, toggleTheme } = useTheme();
   const navigate = useNavigate();
-  
+
   const [searchQuery, setSearchQuery] = useState('');
   const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [countryDropdownOpen, setCountryDropdownOpen] = useState(false);
@@ -83,6 +84,18 @@ export const Navbar = () => {
 
           {/* Right Action Buttons */}
           <div className="flex items-center gap-2 sm:gap-3">
+            {/* GitHub Repository / Developer Link */}
+            <a
+              href="https://github.com/k-anha/tastecraft"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="GitHub Repository & Developer Profile (@k-anha)"
+              title="GitHub: @k-anha (TasteCraft Repo)"
+              className="p-2 sm:p-2.5 rounded-full border border-slate-200 dark:border-slate-700 bg-slate-50/80 dark:bg-slate-800/80 hover:bg-white dark:hover:bg-slate-700 text-slate-700 dark:text-slate-200 hover:text-slate-900 dark:hover:text-white transition-all shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-500"
+            >
+              <FaGithub className="w-4 h-4" />
+            </a>
+
             {/* Dark Mode Toggle Button */}
             <button
               type="button"
@@ -129,11 +142,10 @@ export const Navbar = () => {
                           setCountry(c.code);
                           setCountryDropdownOpen(false);
                         }}
-                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-medium text-left transition-colors ${
-                          countryCode === c.code
+                        className={`w-full flex items-center justify-between px-3.5 py-2.5 text-xs font-medium text-left transition-colors ${countryCode === c.code
                             ? 'bg-brand-50 dark:bg-brand-950/40 text-brand-700 dark:text-brand-400 font-bold'
                             : 'text-slate-700 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800'
-                        }`}
+                          }`}
                       >
                         <span className="flex items-center gap-2.5">
                           <span className="text-base">{c.flag}</span>
@@ -306,6 +318,22 @@ export const Navbar = () => {
                   {isDark ? 'Tap to Switch' : 'Tap to Switch'}
                 </span>
               </button>
+
+              {/* GitHub Link Mobile */}
+              <a
+                href="https://github.com/k-anha/tastecraft"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-3 py-2 rounded-xl font-semibold text-sm text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 flex items-center justify-between"
+              >
+                <span className="flex items-center gap-2">
+                  <Github className="w-4 h-4 text-slate-700 dark:text-slate-200" />
+                  <span>GitHub (@k-anha)</span>
+                </span>
+                <span className="text-xs text-brand-600 dark:text-brand-400 font-bold">
+                  View Repo ↗
+                </span>
+              </a>
             </div>
           </div>
         )}
