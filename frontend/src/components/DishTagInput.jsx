@@ -3,7 +3,7 @@ import { Plus, Trash2, ThumbsUp, ThumbsDown, Minus, Utensils } from 'lucide-reac
 import { useCurrency } from '../context/CurrencyContext';
 
 export const DishTagInput = ({ dishes = [], onChange = () => {}, availableMenuItems = [] }) => {
-  const { currencySymbol, formatPrice } = useCurrency();
+  const { currencySymbol, formatPrice, toUSD, getRawPriceInCurrency, country } = useCurrency();
   const [dishName, setDishName] = useState('');
   const [sentiment, setSentiment] = useState('recommended');
   const [comment, setComment] = useState('');
@@ -20,7 +20,7 @@ export const DishTagInput = ({ dishes = [], onChange = () => {}, availableMenuIt
     if (item) {
       setSelectedMenuItemId(item.id);
       setDishName(item.name);
-      if (item.price) setPricePaid(item.price.toString());
+      if (item.price) setPricePaid(getRawPriceInCurrency(item.price));
     }
   };
 
@@ -33,7 +33,7 @@ export const DishTagInput = ({ dishes = [], onChange = () => {}, availableMenuIt
       menu_item_id: selectedMenuItemId,
       sentiment,
       comment: comment.trim(),
-      price_paid: pricePaid ? parseFloat(pricePaid) : null,
+      price_paid: pricePaid ? toUSD(pricePaid) : null,
       rating: sentiment === 'recommended' ? 5.0 : sentiment === 'neutral' ? 3.0 : 1.0,
     };
 
@@ -73,7 +73,7 @@ export const DishTagInput = ({ dishes = [], onChange = () => {}, availableMenuIt
                 <div className="flex items-center gap-2">
                   <span className="font-bold text-slate-900 dark:text-slate-100 text-sm">{item.dish_name}</span>
                   {item.price_paid && (
-                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">({currencySymbol.trim()}{Number(item.price_paid).toFixed(2)})</span>
+                    <span className="text-xs text-slate-500 dark:text-slate-400 font-medium">({formatPrice(item.price_paid)})</span>
                   )}
                   <span
                     className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold ${
@@ -121,7 +121,7 @@ export const DishTagInput = ({ dishes = [], onChange = () => {}, availableMenuIt
                 <option value="">-- Select from Menu --</option>
                 {availableMenuItems.map((m) => (
                   <option key={m.id} value={m.id}>
-                    {m.name} ({currencySymbol.trim()}{m.price})
+                    {m.name} ({formatPrice(m.price)})
                   </option>
                 ))}
               </select>
@@ -139,7 +139,7 @@ export const DishTagInput = ({ dishes = [], onChange = () => {}, availableMenuIt
           <div className={availableMenuItems.length > 0 ? 'sm:col-span-3' : 'sm:col-span-4'}>
             <input
               type="number"
-              step="0.01"
+              step={country?.decimals === 0 ? "1" : "0.01"}
               placeholder={`Price (${currencySymbol.trim()} optional)`}
               value={pricePaid}
               onChange={(e) => setPricePaid(e.target.value)}

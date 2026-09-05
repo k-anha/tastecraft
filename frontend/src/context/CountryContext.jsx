@@ -180,6 +180,43 @@ export const CountryProvider = ({ children }) => {
     })}`;
   };
 
+  // Convert an amount entered in the user's active currency back to base USD for database storage
+  const toUSD = (amountInCurrentCurrency) => {
+    if (amountInCurrentCurrency === null || amountInCurrentCurrency === undefined || amountInCurrentCurrency === '' || isNaN(amountInCurrentCurrency)) {
+      return 0;
+    }
+    const num = parseFloat(amountInCurrentCurrency);
+    if (isNaN(num) || num <= 0) return 0;
+    const rate = activeCountry.rate || 1.0;
+    return num / rate;
+  };
+
+  // Convert an amount stored in base USD to the user's active currency (numeric)
+  const fromUSD = (amountInUSD) => {
+    if (amountInUSD === null || amountInUSD === undefined || amountInUSD === '' || isNaN(amountInUSD)) {
+      return 0;
+    }
+    const num = parseFloat(amountInUSD);
+    if (isNaN(num)) return 0;
+    const rate = activeCountry.rate || 1.0;
+    return num * rate;
+  };
+
+  // Get raw price string in current currency without symbol (ideal for prefilling input fields)
+  const getRawPriceInCurrency = (amountInUSD) => {
+    if (amountInUSD === null || amountInUSD === undefined || amountInUSD === '' || isNaN(amountInUSD)) {
+      return '';
+    }
+    const num = parseFloat(amountInUSD);
+    if (isNaN(num)) return '';
+    const rate = activeCountry.rate || 1.0;
+    const converted = num * rate;
+    if (activeCountry.decimals === 0) {
+      return Math.round(converted).toString();
+    }
+    return parseFloat(converted.toFixed(activeCountry.decimals)).toString();
+  };
+
   const getPriceTier = (priceRangeNumber = 2) => {
     const symbol = activeCountry.currencySymbol.trim();
     return symbol.repeat(Math.max(1, Math.min(4, priceRangeNumber || 2)));
@@ -199,6 +236,9 @@ export const CountryProvider = ({ children }) => {
         phoneLength: activeCountry.phoneLength,
         phonePlaceholder: activeCountry.phonePlaceholder,
         formatPrice,
+        toUSD,
+        fromUSD,
+        getRawPriceInCurrency,
         getPriceTier,
         detectedLocation,
         isDetecting,

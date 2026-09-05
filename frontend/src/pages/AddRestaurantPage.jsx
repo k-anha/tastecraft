@@ -13,7 +13,7 @@ export const AddRestaurantPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, updateProfile } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
-  const { country, states, getPriceTier, currencySymbol } = useCountry();
+  const { country, states, getPriceTier, currencySymbol, toUSD } = useCountry();
 
   const [name, setName] = useState('');
   const [description, setDescription] = useState('');
@@ -141,7 +141,7 @@ export const AddRestaurantPage = () => {
         .map((m) => ({
           name: m.name.trim(),
           category: m.category,
-          price: parseFloat(m.price),
+          price: toUSD(m.price),
           description: m.description.trim() || null,
           is_signature: m.is_signature,
         }));
@@ -597,8 +597,8 @@ export const AddRestaurantPage = () => {
                     <span className="text-slate-400 absolute left-3 top-2 text-xs font-bold">{currencySymbol}</span>
                     <input
                       type="number"
-                      step="0.5"
-                      placeholder="Price"
+                      step={country?.decimals === 0 ? "1" : "0.01"}
+                      placeholder={country?.currency === 'INR' ? '250' : country?.currency === 'JPY' ? '1200' : '18.50'}
                       value={item.price}
                       onChange={(e) => handleMenuItemChange(index, 'price', e.target.value)}
                       className="w-full pl-7 pr-3 py-2 text-xs rounded-xl border border-slate-200 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-brand-500 font-bold"

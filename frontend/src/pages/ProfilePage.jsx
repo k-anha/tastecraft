@@ -22,7 +22,7 @@ export const ProfilePage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated, updateProfile } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
-  const { formatPrice, currencySymbol } = useCurrency();
+  const { formatPrice, currencySymbol, toUSD, getRawPriceInCurrency, country } = useCurrency();
 
   const [activeTab, setActiveTab] = useState(searchParams.get('tab') || 'reviews');
   const [myReviews, setMyReviews] = useState([]);
@@ -153,7 +153,7 @@ export const ProfilePage = () => {
     setEditingDish(dish);
     setEditDishName(dish.name);
     setEditDishCategory(dish.category || 'Mains');
-    setEditDishPrice(dish.price ? String(dish.price) : '');
+    setEditDishPrice(dish.price ? getRawPriceInCurrency(dish.price) : '');
     setEditDishDescription(dish.description || '');
     setEditDishImageUrl(dish.image_url || '');
     setEditDishIsSignature(dish.is_signature || false);
@@ -172,7 +172,7 @@ export const ProfilePage = () => {
       const payload = {
         name: editDishName.trim(),
         category: editDishCategory,
-        price: parseFloat(editDishPrice),
+        price: toUSD(editDishPrice),
         description: editDishDescription.trim() || null,
         image_url: editDishImageUrl.trim() || null,
         is_signature: editDishIsSignature,
@@ -893,8 +893,9 @@ export const ProfilePage = () => {
                     <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
                     <input
                       type="number"
-                      step="0.1"
+                      step={country?.decimals === 0 ? "1" : "0.01"}
                       required
+                      placeholder={country?.currency === 'INR' ? '250' : country?.currency === 'JPY' ? '1200' : '18.50'}
                       value={editDishPrice}
                       onChange={(e) => setEditDishPrice(e.target.value)}
                       className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-slate-800 dark:text-slate-100 font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"

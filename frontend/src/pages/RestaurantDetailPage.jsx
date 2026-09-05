@@ -24,7 +24,7 @@ export const RestaurantDetailPage = () => {
   const navigate = useNavigate();
   const { user, isAuthenticated } = useAuth();
   const { showSuccess, showError, showInfo } = useToast();
-  const { formatPrice, getPriceTier, currencySymbol } = useCurrency();
+  const { formatPrice, getPriceTier, currencySymbol, toUSD, getRawPriceInCurrency, country } = useCurrency();
 
   const [restaurant, setRestaurant] = useState(null);
   const [reviews, setReviews] = useState([]);
@@ -197,7 +197,7 @@ export const RestaurantDetailPage = () => {
       const payload = {
         name: dishName.trim(),
         category: dishCategory,
-        price: parseFloat(dishPrice),
+        price: toUSD(dishPrice),
         description: dishDescription.trim() || null,
         image_url: dishImageUrl.trim() || null,
         is_signature: dishIsSignature,
@@ -224,7 +224,7 @@ export const RestaurantDetailPage = () => {
     setEditingDishId(item.id);
     setEditDishName(item.name);
     setEditDishCategory(item.category || 'Mains');
-    setEditDishPrice(item.price ? String(item.price) : '');
+    setEditDishPrice(item.price ? getRawPriceInCurrency(item.price) : '');
     setEditDishDescription(item.description || '');
     setEditDishImageUrl(item.image_url || '');
     setEditDishIsSignature(item.is_signature || false);
@@ -244,7 +244,7 @@ export const RestaurantDetailPage = () => {
       const payload = {
         name: editDishName.trim(),
         category: editDishCategory,
-        price: parseFloat(editDishPrice),
+        price: toUSD(editDishPrice),
         description: editDishDescription.trim() || null,
         image_url: editDishImageUrl.trim() || null,
         is_signature: editDishIsSignature,
@@ -1031,9 +1031,9 @@ export const RestaurantDetailPage = () => {
                     <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
                     <input
                       type="number"
-                      step="0.1"
+                      step={country?.decimals === 0 ? "1" : "0.01"}
                       required
-                      placeholder="18.5"
+                      placeholder={country?.currency === 'INR' ? '250' : country?.currency === 'JPY' ? '1200' : '18.50'}
                       value={dishPrice}
                       onChange={(e) => setDishPrice(e.target.value)}
                       className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-slate-800 dark:text-slate-100 font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
@@ -1157,8 +1157,9 @@ export const RestaurantDetailPage = () => {
                     <span className="text-slate-400 absolute left-3 top-2.5 text-xs font-bold">{currencySymbol}</span>
                     <input
                       type="number"
-                      step="0.1"
+                      step={country?.decimals === 0 ? "1" : "0.01"}
                       required
+                      placeholder={country?.currency === 'INR' ? '250' : country?.currency === 'JPY' ? '1200' : '18.50'}
                       value={editDishPrice}
                       onChange={(e) => setEditDishPrice(e.target.value)}
                       className="w-full text-xs rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800 pl-7 pr-3 py-2.5 text-slate-800 dark:text-slate-100 font-bold focus:bg-white dark:focus:bg-slate-900 focus:ring-2 focus:ring-brand-500"
